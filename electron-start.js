@@ -30,7 +30,7 @@ ipcMain.handle("uploadXLSX", async () => {
     properties: ["openFile"],
     filters: [{ name: ".xlsx", extensions: ["xlsx"] }],
   });
-  return files.filePaths.map((file) => path.parse(file).name);
+  return files.filePaths;
 });
 
 ipcMain.handle("uploadDOCX", async () => {

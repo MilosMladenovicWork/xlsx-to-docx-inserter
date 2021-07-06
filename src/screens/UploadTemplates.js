@@ -29,18 +29,24 @@ const useStyles = makeStyles(
   { name: "Convert" }
 );
 
-const UploadTemplates = () => {
-  const classes = useStyles();
-
+export const useUploadedTemplates = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
   useEffect(() => {
     const getUploadedTemplates = async () => {
-      const templates = await window.electron.getUploadedTemplates();
+      const templates = await window.electron?.getUploadedTemplates();
       setUploadedFiles(templates);
     };
     getUploadedTemplates();
   }, []);
+
+  return [uploadedFiles, setUploadedFiles];
+};
+
+const UploadTemplates = () => {
+  const classes = useStyles();
+
+  const [uploadedFiles, setUploadedFiles] = useUploadedTemplates();
 
   const onUploadHandler = async () => {
     const files = await window.electron.uploadDOCX();
