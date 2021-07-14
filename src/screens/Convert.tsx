@@ -15,8 +15,11 @@ import {
   FormControl,
   InputLabel,
   Snackbar,
+  SnackbarCloseReason,
+  CircularProgress,
+  colors,
 } from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
+import { Alert, Color } from "@material-ui/lab";
 import { Description, Publish, Save, Delete } from "@material-ui/icons";
 import { useEffect, useState } from "react";
 import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
@@ -32,24 +35,46 @@ const useStyles = makeStyles(
     formControl: {
       minWidth: 120,
     },
+    wrapper: {
+      position: "relative",
+      display: "inline",
+    },
+    buttonSuccess: {
+      backgroundColor: theme.palette.success.main,
+    },
+    buttonProgress: {
+      color: theme.palette.primary.main,
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      marginTop: -12,
+      marginLeft: -12,
+    },
   }),
   { name: "Convert" }
 );
 
 const Convert = () => {
   const classes = useStyles();
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [uploadedFiles, setUploadedFiles] = useState<[] | string[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<unknown>("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [filesWritten, setFilesWritten] = useState(false);
-  const [fileWrittingStatus, setFileWrittingStatus] = useState({
+  const [fileWrittingStatus, setFileWrittingStatus] = useState<{
+    severity: Color | undefined;
+    message: string | undefined;
+  }>({
     severity: undefined,
     message: undefined,
   });
+  const [generatingDOCX, setGeneratingDOCX] = useState(false);
 
   const [uploadedTemplates, setUploadedTemplates] = useUploadedTemplates();
 
-  const handleSnackbarClose = (event, reason) => {
+  const handleSnackbarClose = (
+    event: React.SyntheticEvent<any, Event>,
+    reason: SnackbarCloseReason
+  ) => {
     if (reason === "clickaway") {
       return;
     }
@@ -58,18 +83,22 @@ const Convert = () => {
   };
 
   const onUploadHandler = async () => {
-    const files = await window.electron.ipcRenderer.invoke("uploadXLSX");
+    const files: string[] = await window.electron.ipcRenderer.invoke(
+      "uploadXLSX"
+    );
     // const files = await window.electron.ipcRenderer.invoke("uploadXLSX");
     setUploadedFiles((prevState) => [...new Set([...prevState, ...files])]);
   };
 
-  const removeUploadedFile = (file) => {
+  const removeUploadedFile = (file: string) => {
     setUploadedFiles((prevState) =>
       prevState.filter((filePath) => filePath !== file)
     );
   };
 
-  const handleSelectedTemplate = (event) => {
+  const handleSelectedTemplate = (
+    event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
+  ) => {
     setSelectedTemplate(event.target.value);
   };
 
@@ -175,7 +204,7 @@ const Convert = () => {
         </Grid>
       </Grid>
       <Grid container item xs={12} md={6} direction="column" spacing={2}>
-        {uploadedFiles.length > 0 && uploadedTemplates.length && (
+        {!!uploadedTemplates.length && uploadedFiles.length > 0 && (
           <Grid item>
             <Typography className={classes.listTitle} variant="h6" gutterBottom>
               Choose template
@@ -197,29 +226,39 @@ const Convert = () => {
         )}
         {uploadedFiles.length > 0 && selectedTemplate && (
           <Grid item>
-            <Button
-              variant="contained"
-              onClick={async () => {
-                let savedFiles = await window.electron.saveFiles(
-                  uploadedFiles,
-                  selectedTemplate
-                );
-                console.log(savedFiles.length);
-                if (savedFiles.length > 0) {
-                  setSnackbarOpen(true);
-                  setFilesWritten(savedFiles.length);
-                  setFileWrittingStatus({
-                    severity: "success",
-                    message: `${savedFiles.length} Files successfully saved`,
-                  });
-                }
-              }}
-              color="secondary"
-              component="label"
-              startIcon={<Save />}
-            >
-              Save Word Files
-            </Button>
+            <div className={classes.wrapper}>
+              <Button
+                variant="contained"
+                disabled={generatingDOCX}
+                onClick={async () => {
+                  setGeneratingDOCX(true);
+                  let savedFiles = await window.electron.saveFiles(
+                    uploadedFiles,
+                    selectedTemplate
+                  );
+                  setGeneratingDOCX(false);
+                  if (savedFiles && savedFiles.length > 0) {
+                    setSnackbarOpen(true);
+                    setFilesWritten(savedFiles.length);
+                    setFileWrittingStatus({
+                      severity: "success",
+                      message: `${savedFiles.length} Files successfully saved`,
+                    });
+                  }
+                }}
+                color="secondary"
+                component="label"
+                startIcon={<Save />}
+              >
+                Save Word Files
+              </Button>
+              {generatingDOCX && (
+                <CircularProgress
+                  size={24}
+                  className={classes.buttonProgress}
+                />
+              )}
+            </div>
           </Grid>
         )}
       </Grid>
@@ -228,10 +267,7 @@ const Convert = () => {
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
       >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity={fileWrittingStatus.severity}
-        >
+        <Alert severity={fileWrittingStatus.severity}>
           {fileWrittingStatus.message}
         </Alert>
       </Snackbar>

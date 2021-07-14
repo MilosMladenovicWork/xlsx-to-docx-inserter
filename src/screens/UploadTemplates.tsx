@@ -29,12 +29,16 @@ const useStyles = makeStyles(
   { name: "Convert" }
 );
 
-export const useUploadedTemplates = () => {
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+export const useUploadedTemplates = (): [
+  string[],
+  React.Dispatch<React.SetStateAction<string[]>>
+] => {
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
 
   useEffect(() => {
     const getUploadedTemplates = async () => {
-      const templates = await window.electron?.getUploadedTemplates();
+      const templates = await window.electron.getUploadedTemplates();
+      console.log(templates);
       setUploadedFiles(templates);
     };
     getUploadedTemplates();
@@ -53,7 +57,7 @@ const UploadTemplates = () => {
     setUploadedFiles((prevState) => [...new Set([...prevState, ...files])]);
   };
 
-  const onDeleteHandler = async (fileName) => {
+  const onDeleteHandler = async (fileName: string) => {
     const deletedFile = await window.electron.deleteDOCX(fileName);
     setUploadedFiles((prevState) =>
       prevState.filter((file) => file !== deletedFile)

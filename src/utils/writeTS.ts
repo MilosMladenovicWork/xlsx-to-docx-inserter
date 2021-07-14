@@ -1,10 +1,11 @@
-var PizZip = require("pizzip");
-var Docxtemplater = require("docxtemplater");
-const Excel = require("exceljs");
+import * as fs from "fs";
 
-const fs = require("fs");
-const path = require("path");
-const { ipcRenderer } = require("electron");
+import PizZip from "pizzip";
+import Docxtemplater from "docxtemplater";
+import Excel from "exceljs";
+
+import * as path from "path";
+import { ipcRenderer } from "electron";
 
 const writeDummy = async () => {
   fs.writeFile("mynewfile3.txt", "Hello content!", function (err) {
@@ -13,12 +14,12 @@ const writeDummy = async () => {
   });
 };
 
-function errorHandler(error) {
+function errorHandler(error: any) {
   console.log(JSON.stringify({ error: error }));
 
   if (error.properties && error.properties.errors instanceof Array) {
     const errorMessages = error.properties.errors
-      .map(function (error) {
+      .map(function (error: any) {
         return error.properties.explanation;
       })
       .join("\n");
@@ -27,24 +28,35 @@ function errorHandler(error) {
   throw error;
 }
 
-const handleWorkbook = async function (
-  workbook,
-  replaceData,
-  folder,
-  fileName,
-  templateName
-) {
-  var worksheet = workbook.getWorksheet();
-  let firstValidColumn;
-  let firstValidRow;
-  let columnNames;
+type ColumnNames =
+  | (Excel.CellValue[] & {
+      [key: string]: string | undefined;
+    })
+  | (Excel.CellValue[] & {
+      [key: number]: string | undefined;
+    })
+  | [];
 
-  const filesToWrite = [];
+const handleWorkbook = async function (
+  workbook: Excel.Workbook,
+  replaceData: {
+    [key: string]: Excel.CellValue | undefined;
+  },
+  folder: string,
+  fileName: string,
+  templateName: string
+) {
+  var worksheet = workbook.getWorksheet(0);
+  let firstValidColumn: number;
+  let firstValidRow: number;
+  let columnNames: ColumnNames = [];
+
+  const filesToWrite: Promise<unknown>[] = [];
 
   worksheet.eachRow({ includeEmpty: true }, async function (row, rowNumber) {
-    const rowValues = row.values;
+    const rowValues = row.values as ColumnNames;
 
-    if (!firstValidColumn) {
+    if (firstValidColumn) {
       firstValidColumn = rowValues.findIndex((value) => value != null);
     }
     if (firstValidRow === undefined) {
@@ -55,13 +67,13 @@ const handleWorkbook = async function (
     if (firstValidRow === rowNumber) {
       columnNames = rowValues;
       const nonNullCells = rowValues.filter((cell) => cell != null);
-      nonNullCells.forEach((cell) => (replaceData[cell] = undefined));
+      nonNullCells.forEach((cell) => (replaceData[cell as string] = undefined));
     }
-    if (firstValidRow < rowNumber && rowValues[firstValidColumn]) {
+    if (firstValidRow < rowNumber) {
       rowValues.forEach((cell, index) => {
         const columnValue = columnNames[index];
         if (index >= firstValidColumn && columnValue !== undefined) {
-          replaceData[columnValue] = cell;
+          replaceData[columnValue as string] = cell;
         }
       });
 
@@ -73,28 +85,29 @@ const handleWorkbook = async function (
 
       let zip = new PizZip(content);
       let doc;
-      doc = new Docxtemplater(zip, {
-        paragraphLoop: true,
-        linebreaks: true,
-      });
-      //set the templateVariables
-      doc.setData(replaceData);
-
       try {
-        // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-        doc.render();
-      } catch (error) {
-        // Catch rendering errors (errors relating to the rendering of the template: angularParser throws an error)
-        errorHandler(error);
-      }
+        doc = new Docxtemplater(zip, {
+          paragraphLoop: true,
+          linebreaks: true,
+        });
+        //set the templateVariables
+        doc.setData(replaceData);
 
-      const buf = doc.getZip().generate({ type: "nodebuffer" });
-      // buf is a nodejs buffer, you can either write it to a file or do anything else with it.
-      try {
+        try {
+          // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+          doc.render();
+        } catch (error) {
+          // Catch rendering errors (errors relating to the rendering of the template: angularParser throws an error)
+          errorHandler(error);
+        }
+
+        const buf = doc.getZip().generate({ type: "nodebuffer" });
+
+        // buf is a nodejs buffer, you can either write it to a file or do anything else with it.
         const writtenFile = writeFile(
           path.resolve(
             folder,
-            `${templateName} ${rowValues[firstValidColumn]}.docx`
+            `${fileName} ${rowValues[firstValidColumn]}.docx`
           ),
           buf
         );
@@ -113,7 +126,7 @@ const handleWorkbook = async function (
   }
 };
 
-const writeFile = async (path, data) =>
+const writeFile = (path: string, data: string | NodeJS.ArrayBufferView) =>
   new Promise((resolve, reject) => {
     fs.writeFile(path, data, (error) => {
       if (error) reject(error);
@@ -122,7 +135,11 @@ const writeFile = async (path, data) =>
     });
   });
 
-const writeFiles = async (filesPath, folder, templateName) => {
+const writeFiles = async (
+  filesPath: string[],
+  folder: string,
+  templateName: string
+) => {
   // The error object contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
 
   const workbook = new Excel.Workbook();
@@ -145,7 +162,7 @@ const writeFiles = async (filesPath, folder, templateName) => {
         templateName
       );
       files.push(filesWritten);
-      return Promise.all(...files);
+      return Promise.all([...files]);
     } catch (e) {
       console.log(e);
       return e;
@@ -153,7 +170,7 @@ const writeFiles = async (filesPath, folder, templateName) => {
   }
 };
 
-const saveFiles = async (filePaths, templateToUse) => {
+const saveFiles = async (filePaths: string[], templateToUse: string) => {
   const folder = await ipcRenderer.invoke("folderDialog");
   if (folder.filePaths.length > 0) {
     const writtenFiles = await writeFiles(
@@ -182,7 +199,7 @@ const getUploadedTemplates = async () =>
   });
 
 const uploadDOCX = async () => {
-  const files = await ipcRenderer.invoke("uploadDOCX");
+  const files: string[] = await ipcRenderer.invoke("uploadDOCX");
   return new Promise((resolve, reject) => {
     //joining path of directory
     const directoryPath = path.join(__dirname, "../../templates");
@@ -201,11 +218,11 @@ const uploadDOCX = async () => {
   });
 };
 
-const getFileNameFromPath = (filePath) => {
+const getFileNameFromPath = (filePath: string) => {
   return path.parse(filePath).name;
 };
 
-const deleteDOCX = (fileName) => {
+const deleteDOCX = (fileName: string) => {
   return new Promise((resolve, reject) => {
     const directoryPath = path.join(__dirname, "../../templates");
     //passsing directoryPath and callback function
