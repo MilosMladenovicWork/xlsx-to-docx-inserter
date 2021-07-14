@@ -2,6 +2,11 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Workflow
+
+  1. Run `npm run start`, wait for browser window to appear with loaded page.
+  2. Run `npm run electron`, application window should appear with Inspect tool opened.
+
 ## Available Scripts
 
 In the project directory, you can run:
