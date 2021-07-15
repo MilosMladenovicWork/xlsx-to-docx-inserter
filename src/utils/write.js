@@ -1,8 +1,7 @@
 const PizZip = require("pizzip");
 const Docxtemplater = require("docxtemplater");
 const Excel = require("exceljs");
-const libre = require("libreoffice-convert");
-console.log(libre);
+var toPdf = require("office-to-pdf");
 
 const fs = require("fs");
 const path = require("path");
@@ -178,22 +177,24 @@ const saveFiles = async (filePaths, templateToUse) => {
 
 const convertDOCXToPDF = async (filePaths, folder) => {
   const promises = [];
-  filePaths.forEach(async (filePath) => {
-    const wordBuffer = await readFile(filePath);
-    const pdfBuffer = await new Promise((resolve, reject) => {
-      libre.convert(wordBuffer, ".pdf", undefined, (err, result) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(result);
-      });
-    });
 
-    promises.push(
-      writeFile(folder + getFileNameFromPath(filePath) + ".pdf", pdfBuffer)
-    );
-  });
-  return Promise.all(...promises);
+  for (let i = 0; i < filePaths.length; i++) {
+    const wordBuffer = await readFile(filePaths[i]);
+
+    try {
+      const pdfBuffer = await toPdf(wordBuffer);
+      promises.push(
+        writeFile(
+          folder + `/${getFileNameFromPath(filePaths[i])}.pdf`,
+          pdfBuffer
+        )
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  return promises;
 };
 
 const savePDFFiles = async (filePaths) => {
@@ -258,7 +259,6 @@ const deleteDOCX = (fileName) => {
         (file) => path.parse(file).name === fileName
       );
       if (fileToDelete) {
-        console.log(path.join(directoryPath, fileToDelete));
         fs.unlink(path.join(directoryPath, fileToDelete), (err) => {
           if (err) reject();
           resolve(fileName);
