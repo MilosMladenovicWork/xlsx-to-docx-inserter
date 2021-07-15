@@ -4,29 +4,9 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { ThemeProvider } from "@material-ui/styles";
-import { createMuiTheme } from "@material-ui/core/styles";
+import theme from './theme/AppTheme'
 
 // TODO: fix browser crashing on development when start script runs
-
-const theme = createMuiTheme({
-  palette: {
-    type: "dark",
-    primary: {
-      light: "#EDEDED",
-      dark: "#EDEDED",
-      main: "#EDEDED",
-    },
-    secondary: {
-      light: "#DA0037",
-      dark: "#DA0037",
-      main: "#DA0037",
-    },
-    background: {
-      default: "#171717",
-      paper: "#232323",
-    },
-  },
-});
 
 ReactDOM.render(
   <React.StrictMode>
