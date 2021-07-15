@@ -6,6 +6,8 @@ import reportWebVitals from "./reportWebVitals";
 import { ThemeProvider } from "@material-ui/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
 
+// TODO: fix browser crashing on development when start script runs
+
 const theme = createMuiTheme({
   palette: {
     type: "dark",

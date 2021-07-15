@@ -1,6 +1,8 @@
-var PizZip = require("pizzip");
-var Docxtemplater = require("docxtemplater");
+const PizZip = require("pizzip");
+const Docxtemplater = require("docxtemplater");
 const Excel = require("exceljs");
+const libre = require("libreoffice-convert");
+console.log(libre);
 
 const fs = require("fs");
 const path = require("path");
@@ -122,6 +124,15 @@ const writeFile = async (path, data) =>
     });
   });
 
+const readFile = async (path) =>
+  new Promise((resolve, reject) => {
+    fs.readFile(path, (error, data) => {
+      if (error) reject(error);
+
+      resolve(data);
+    });
+  });
+
 const writeFiles = async (filesPath, folder, templateName) => {
   // The error object contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
 
@@ -161,6 +172,34 @@ const saveFiles = async (filePaths, templateToUse) => {
       folder.filePaths[0],
       templateToUse
     );
+    return writtenFiles;
+  }
+};
+
+const convertDOCXToPDF = async (filePaths, folder) => {
+  const promises = [];
+  filePaths.forEach(async (filePath) => {
+    const wordBuffer = await readFile(filePath);
+    const pdfBuffer = await new Promise((resolve, reject) => {
+      libre.convert(wordBuffer, ".pdf", undefined, (err, result) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(result);
+      });
+    });
+
+    promises.push(
+      writeFile(folder + getFileNameFromPath(filePath) + ".pdf", pdfBuffer)
+    );
+  });
+  return Promise.all(...promises);
+};
+
+const savePDFFiles = async (filePaths) => {
+  const folder = await ipcRenderer.invoke("folderDialog");
+  if (folder.filePaths.length > 0) {
+    const writtenFiles = await convertDOCXToPDF(filePaths, folder.filePaths[0]);
     return writtenFiles;
   }
 };
@@ -233,6 +272,7 @@ module.exports = {
   writeDummy,
   writeFiles,
   saveFiles,
+  savePDFFiles,
   uploadDOCX,
   deleteDOCX,
   getFileNameFromPath,

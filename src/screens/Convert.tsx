@@ -59,7 +59,6 @@ const Convert = () => {
   const [uploadedFiles, setUploadedFiles] = useState<[] | string[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<unknown>("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [filesWritten, setFilesWritten] = useState(false);
   const [fileWrittingStatus, setFileWrittingStatus] = useState<{
     severity: Color | undefined;
     message: string | undefined;
@@ -68,6 +67,9 @@ const Convert = () => {
     message: undefined,
   });
   const [generatingDOCX, setGeneratingDOCX] = useState(false);
+  const [savedDOCXFiles, setSavedDOCXFiles] = useState([]);
+  const [generatingPDF, setGeneratingPDF] = useState(false);
+  const [savedPDFFiles, setSavedPDFFiles] = useState([]);
 
   const [uploadedTemplates, setUploadedTemplates] = useUploadedTemplates();
 
@@ -238,12 +240,13 @@ const Convert = () => {
                   );
                   setGeneratingDOCX(false);
                   if (savedFiles && savedFiles.length > 0) {
-                    setSnackbarOpen(true);
-                    setFilesWritten(savedFiles.length);
+                    setSavedDOCXFiles(savedFiles);
                     setFileWrittingStatus({
                       severity: "success",
-                      message: `${savedFiles.length} Files successfully saved`,
+                      message: `${savedFiles.length} files successfully saved`,
                     });
+                    setSnackbarOpen(false);
+                    setSnackbarOpen(true);
                   }
                 }}
                 color="secondary"
@@ -262,6 +265,45 @@ const Convert = () => {
           </Grid>
         )}
       </Grid>
+      {uploadedFiles.length > 0 && selectedTemplate && (
+        <Grid container item xs={12} md={6} direction="column" spacing={2}>
+          <Grid item>
+            <div className={classes.wrapper}>
+              <Button
+                variant="contained"
+                disabled={generatingPDF}
+                onClick={async () => {
+                  setGeneratingPDF(true);
+                  let savedFiles = await window.electron.savePDFFiles(
+                    savedDOCXFiles
+                  );
+                  setGeneratingPDF(false);
+                  if (savedFiles && savedFiles.length > 0) {
+                    setSavedPDFFiles(savedFiles);
+                    setFileWrittingStatus({
+                      severity: "success",
+                      message: `${savedFiles.length} files successfully saved`,
+                    });
+                    setSnackbarOpen(false);
+                    setSnackbarOpen(true);
+                  }
+                }}
+                color="secondary"
+                component="label"
+                startIcon={<Save />}
+              >
+                Save PDF Files
+              </Button>
+              {generatingPDF && (
+                <CircularProgress
+                  size={24}
+                  className={classes.buttonProgress}
+                />
+              )}
+            </div>
+          </Grid>
+        </Grid>
+      )}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
