@@ -1,17 +1,21 @@
 const { contextBridge, ipcRenderer } = require("electron");
 const {
-  writeDummy,
   writeFiles,
   saveFiles,
   savePDFFiles,
+  getFileNameFromPath,
+} = require("./src/utils/fileHandlers");
+
+const {
   uploadDOCX,
   deleteDOCX,
+} = require("./src/utils/docxHandlers");
+
+const {
   getUploadedTemplates,
-  getFileNameFromPath,
-} = require("./src/utils/write");
+} = require("./src/utils/getTemplate");
 
 contextBridge.exposeInMainWorld("electron", {
-  writeDummy,
   writeFiles,
   saveFiles,
   savePDFFiles,
