@@ -2,6 +2,7 @@ const PizZip = require("pizzip");
 const Docxtemplater = require("docxtemplater");
 const Excel = require("exceljs");
 var toPdf = require("office-to-pdf");
+const RegexParser = require("regex-parser");
 
 const fs = require("fs");
 const path = require("path");
@@ -28,7 +29,7 @@ const handleWorkbook = async function (
   fileName,
   templateName
 ) {
-  var worksheet = workbook.getWorksheet();
+  const worksheet = workbook.getWorksheet();
   let firstValidColumn;
   let firstValidRow;
   let columnNames;
@@ -38,8 +39,11 @@ const handleWorkbook = async function (
   worksheet.eachRow({ includeEmpty: true }, async function (row, rowNumber) {
     const rowValues = row.values;
 
-    if (!firstValidColumn) {
-      firstValidColumn = rowValues.findIndex((value) => value != null);
+    if (firstValidColumn !== undefined) {
+      const indexOfValidColumn = rowValues.findIndex((value) => value != null);
+      if (indexOfValidColumn !== -1) {
+        firstValidColumn = indexOfValidColumn;
+      }
     }
     if (firstValidRow === undefined) {
       if (rowValues.some((value) => value != null)) {
@@ -126,18 +130,15 @@ const readFile = async (path) =>
   });
 
 const writeFiles = async (filesPath, folder, templateName) => {
-  // The error object contains additional information when logged with JSON.stringify (it contains a properties object containing all suberrors).
-
   const workbook = new Excel.Workbook();
 
   const files = [];
 
   for (const filePath of filesPath) {
+    await workbook.xlsx.readFile(filePath);
     const fileName = path.parse(filePath).name;
 
     let replaceData = {};
-
-    await workbook.xlsx.readFile(filePath);
 
     try {
       let filesWritten = await handleWorkbook(

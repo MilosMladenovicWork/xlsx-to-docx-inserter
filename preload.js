@@ -6,14 +6,14 @@ const {
   getFileNameFromPath,
 } = require("./src/utils/fileHandlers");
 
-const {
-  uploadDOCX,
-  deleteDOCX,
-} = require("./src/utils/docxHandlers");
+const { uploadDOCX, deleteDOCX } = require("./src/utils/docxHandlers");
 
 const {
-  getUploadedTemplates,
-} = require("./src/utils/getTemplate");
+  checkXLSX,
+  checkXLSXColumnWithRegex,
+} = require("./src/utils/xlsxHandlers");
+
+const { getUploadedTemplates } = require("./src/utils/getTemplate");
 
 contextBridge.exposeInMainWorld("electron", {
   writeFiles,
@@ -23,5 +23,7 @@ contextBridge.exposeInMainWorld("electron", {
   deleteDOCX,
   getUploadedTemplates,
   getFileNameFromPath,
+  checkXLSX,
+  checkXLSXColumnWithRegex,
   ipcRenderer,
 });

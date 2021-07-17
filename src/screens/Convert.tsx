@@ -17,7 +17,6 @@ import {
   Snackbar,
   SnackbarCloseReason,
   CircularProgress,
-  colors,
 } from "@material-ui/core";
 import { Alert, Color } from "@material-ui/lab";
 import { Description, Publish, Save, Delete } from "@material-ui/icons";
@@ -88,6 +87,11 @@ const Convert = () => {
     const files: string[] = await window.electron.ipcRenderer.invoke(
       "uploadXLSX"
     );
+
+    const xlsxStatus: { label: string; valid: boolean; message?: string }[] =
+      await window.electron.checkXLSX(files);
+
+    console.log(xlsxStatus);
     // const files = await window.electron.ipcRenderer.invoke("uploadXLSX");
     setUploadedFiles((prevState) => [...new Set([...prevState, ...files])]);
   };

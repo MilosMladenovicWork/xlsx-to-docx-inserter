@@ -9,6 +9,7 @@ const {
   deleteDOCX,
   getUploadedTemplates,
   getFileNameFromPath,
+  checkXLSX,
 } = require("../utils/write");
 
 export interface ElectronPreloadFunctions {
@@ -21,4 +22,5 @@ export interface ElectronPreloadFunctions {
   getUploadedTemplates: typeof getUploadedTemplates;
   getFileNameFromPath: typeof getFileNameFromPath;
   ipcRenderer: typeof ipcRenderer;
+  checkXLSX: typeof checkXLSX;
 }
