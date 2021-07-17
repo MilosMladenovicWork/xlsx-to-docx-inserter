@@ -18,6 +18,7 @@ import {
   SnackbarCloseReason,
   CircularProgress,
   Input,
+  Chip,
 } from "@material-ui/core";
 import { Alert, Color } from "@material-ui/lab";
 import { Description, Publish, Save, Delete } from "@material-ui/icons";
@@ -293,6 +294,26 @@ const Convert = () => {
         </Grid>
         {uploadedFiles.length > 0 && (
           <Grid container item spacing={1}>
+            <Grid item>
+              <Typography>Available columns</Typography>
+            </Grid>
+            <Grid container item spacing={1}>
+              {xlsxColumnNames &&
+                xlsxColumnNames.length > 0 &&
+                xlsxColumnNames.map(({ name, colNum }) => (
+                  <Grid item>
+                    <Chip
+                      avatar={<Avatar>{colNum}</Avatar>}
+                      label={name}
+                      color={"primary"}
+                    />
+                  </Grid>
+                ))}
+            </Grid>
+          </Grid>
+        )}
+        {uploadedFiles.length > 0 && (
+          <Grid container item spacing={2}>
             <Grid item>
               <Typography>
                 Select column and insert regex to check if data is all right
