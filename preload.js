@@ -11,6 +11,7 @@ const { uploadDOCX, deleteDOCX } = require("./src/utils/docxHandlers");
 const {
   checkXLSX,
   checkXLSXColumnWithRegex,
+  getXLSXColumnNames,
 } = require("./src/utils/xlsxHandlers");
 
 const { getUploadedTemplates } = require("./src/utils/getTemplate");
@@ -25,5 +26,6 @@ contextBridge.exposeInMainWorld("electron", {
   getFileNameFromPath,
   checkXLSX,
   checkXLSXColumnWithRegex,
+  getXLSXColumnNames,
   ipcRenderer,
 });

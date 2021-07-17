@@ -81,6 +81,8 @@ const checkXLSX = async (filesPath, cellRegexes) => {
   }
 };
 
+
+// TODO: make this function work on its own for check columns functionality
 const checkXLSXColumnWithRegex = (cellRegexes, row, rowNum, statuses) => {
   // cellRegex array of objects that has keys columnNum and regex
   if (cellRegexes && cellRegexes.length > 0) {
@@ -102,7 +104,49 @@ const checkXLSXColumnWithRegex = (cellRegexes, row, rowNum, statuses) => {
   }
 };
 
+const getXLSXColumnNames = async (filesPath) => {
+  const workbook = new Excel.Workbook();
+
+  const statuses = [];
+
+  let columns = [];
+
+  for (const filePath of filesPath) {
+    await workbook.xlsx.readFile(filePath);
+    const worksheet = workbook.getWorksheet();
+
+    let firstValidColumn;
+    let firstValidRow;
+
+    worksheet.eachRow({ includeEmpty: true }, function (row, rowNumber) {
+      const rowValues = row.values;
+
+      if (firstValidColumn === undefined) {
+        const indexOfValidColumn = rowValues.findIndex(
+          (value) => value != null
+        );
+        if (indexOfValidColumn !== -1) {
+          firstValidColumn = indexOfValidColumn;
+
+          // make array of column indexes to compare with other rows arrays
+          row.eachCell((cell, columnNum) => {
+            columns.push({ name: cell.text, colNum: columnNum });
+          });
+        }
+      }
+      if (firstValidRow === undefined) {
+        if (rowValues.some((value) => value != null)) {
+          firstValidRow = rowNumber;
+        }
+      }
+    });
+  }
+
+  return columns;
+};
+
 module.exports = {
   checkXLSX,
   checkXLSXColumnWithRegex,
+  getXLSXColumnNames,
 };

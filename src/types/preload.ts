@@ -10,6 +10,7 @@ const {
   getUploadedTemplates,
   getFileNameFromPath,
   checkXLSX,
+  getXLSXColumnNames,
 } = require("../utils/write");
 
 export interface ElectronPreloadFunctions {
@@ -23,4 +24,5 @@ export interface ElectronPreloadFunctions {
   getFileNameFromPath: typeof getFileNameFromPath;
   ipcRenderer: typeof ipcRenderer;
   checkXLSX: typeof checkXLSX;
+  getXLSXColumnNames: typeof getXLSXColumnNames;
 }
