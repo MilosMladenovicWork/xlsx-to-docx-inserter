@@ -41,6 +41,10 @@ ipcMain.handle("uploadDOCX", async () => {
   return files.filePaths;
 });
 
+ipcMain.handle("getAppDataDirectory", () => {
+  return app.getPath("appData");
+});
+
 app.on("ready", createWindow);
 
 app.on("activate", () => mainWindow === null && createWindow());

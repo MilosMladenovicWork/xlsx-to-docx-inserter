@@ -4,13 +4,23 @@ const { ipcRenderer } = require("electron");
 
 const uploadDOCX = async () => {
   const files = await ipcRenderer.invoke("uploadDOCX");
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     //joining path of directory
-    const directoryPath = path.join(__dirname, "../../templates");
+    const directoryPath = await ipcRenderer.invoke("getAppDataDirectory");
+    const folderName = "templates";
+
+    const templatesFolder = path.join(directoryPath, folderName);
+
+    if (!fs.existsSync(templatesFolder)) {
+      fs.mkdirSync(templatesFolder, {
+        recursive: true,
+      });
+    }
+
     files.forEach((filePath) => {
       fs.copyFile(
         filePath,
-        path.join(directoryPath, path.basename(filePath)),
+        path.join(templatesFolder, path.basename(filePath)),
         (err) => {
           if (err) throw err;
 
@@ -23,10 +33,13 @@ const uploadDOCX = async () => {
 };
 
 const deleteDOCX = (fileName) => {
-  return new Promise((resolve, reject) => {
-    const directoryPath = path.join(__dirname, "../../templates");
+  return new Promise(async (resolve, reject) => {
+    const directoryPath = await ipcRenderer.invoke("getAppDataDirectory");
+    const folderName = "templates";
+
+    const templatesFolder = path.join(directoryPath, folderName);
     //passsing directoryPath and callback function
-    fs.readdir(directoryPath, function (err, files) {
+    fs.readdir(templatesFolder, function (err, files) {
       //handling error
       if (err) {
         console.log("Unable to scan directory: " + err);
@@ -34,9 +47,10 @@ const deleteDOCX = (fileName) => {
       }
       const fileToDelete = files.find(
         (file) => path.parse(file).name === fileName
-      );
+        );
+        
       if (fileToDelete) {
-        fs.unlink(path.join(directoryPath, fileToDelete), (err) => {
+        fs.unlink(path.join(templatesFolder, fileToDelete), (err) => {
           if (err) reject();
           resolve(fileName);
         });
@@ -44,7 +58,6 @@ const deleteDOCX = (fileName) => {
     });
   });
 };
-
 
 module.exports = {
   uploadDOCX,

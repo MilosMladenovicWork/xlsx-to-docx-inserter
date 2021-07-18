@@ -526,13 +526,14 @@ const Convert = () => {
             <div className={classes.toolbar} />
             <Divider />
             <List>
-              {XLSXUploadStatuses.map(({ valid, label, message }) => (
-                <CollapsableListItem
-                  valid={valid}
-                  label={label}
-                  message={message}
-                />
-              ))}
+              {XLSXUploadStatuses &&
+                XLSXUploadStatuses.map(({ valid, label, message }) => (
+                  <CollapsableListItem
+                    valid={valid}
+                    label={label}
+                    message={message}
+                  />
+                ))}
             </List>
           </MotionDrawer>
         </AnimateSharedLayout>
