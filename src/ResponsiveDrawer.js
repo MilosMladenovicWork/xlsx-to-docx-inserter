@@ -47,8 +47,13 @@ const useStyles = makeStyles((theme) => ({
     width: drawerWidth,
   },
   content: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
+    marginTop: theme.mixins.toolbar.minHeight + 10,
+    padding: theme.spacing(3, 3, 3, 3),
+    [theme.breakpoints.up("sm")]: {
+      width: "calc(100% - 530px)",
+    },
+    height: "100vh",
+    overflow: "auto",
   },
 }));
 
@@ -142,10 +147,7 @@ function ResponsiveDrawer(props) {
           </Drawer>
         </Hidden>
       </nav>
-      <main className={classes.content}>
-        <div className={classes.toolbar} />
-        {children}
-      </main>
+      <main className={classes.content}>{children}</main>
     </div>
   );
 }
