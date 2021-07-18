@@ -36,7 +36,6 @@ const deleteDOCX = (fileName) => {
         (file) => path.parse(file).name === fileName
       );
       if (fileToDelete) {
-        console.log(path.join(directoryPath, fileToDelete));
         fs.unlink(path.join(directoryPath, fileToDelete), (err) => {
           if (err) reject();
           resolve(fileName);

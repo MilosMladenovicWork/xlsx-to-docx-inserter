@@ -10,7 +10,8 @@ const { uploadDOCX, deleteDOCX } = require("./src/utils/docxHandlers");
 
 const {
   checkXLSX,
-  checkXLSXColumnWithRegex,
+  checkXLSXRowColumnWithRegex,
+  checkXLSXColumnsWithRegex,
   getXLSXColumnNames,
 } = require("./src/utils/xlsxHandlers");
 
@@ -25,7 +26,8 @@ contextBridge.exposeInMainWorld("electron", {
   getUploadedTemplates,
   getFileNameFromPath,
   checkXLSX,
-  checkXLSXColumnWithRegex,
+  checkXLSXColumnsWithRegex,
+  checkXLSXRowColumnWithRegex,
   getXLSXColumnNames,
   ipcRenderer,
 });

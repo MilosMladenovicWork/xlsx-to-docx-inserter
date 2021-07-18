@@ -64,6 +64,7 @@ const Convert = () => {
   const [cellRegexes, setCellRegexes] = useState<
     { id?: string; regex?: string; colNum: number | undefined }[]
   >([{ id: undefined, regex: undefined, colNum: undefined }]);
+  const [checkingXLSXColumns, setCheckingXLSXColumns] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<unknown>("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [fileWrittingStatus, setFileWrittingStatus] = useState<{
@@ -110,6 +111,20 @@ const Convert = () => {
     );
   };
 
+  const handleCheckXLSXColumns = async () => {
+    setCheckingXLSXColumns(true);
+    
+    const checkXLSXColumnsStatuses =
+      await window.electron.checkXLSXColumnsWithRegex(
+        uploadedFiles,
+        cellRegexes
+      );
+
+    setCheckingXLSXColumns(false)
+    
+    console.log(checkXLSXColumnsStatuses)
+  };
+
   const handleSelectedTemplate = (
     event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
   ) => {
@@ -127,7 +142,6 @@ const Convert = () => {
       const columnNames = await window.electron.getXLSXColumnNames(
         uploadedFiles
       );
-      console.log(columnNames);
       setXLSXColumnNames(columnNames);
     };
 
@@ -159,7 +173,6 @@ const Convert = () => {
       });
     }
   };
-  console.log(cellRegexes);
 
   const handleRegexInput: React.ChangeEventHandler<
     HTMLInputElement | HTMLTextAreaElement
@@ -324,7 +337,7 @@ const Convert = () => {
                 <Grid container item spacing={2}>
                   <Grid item>
                     <FormControl key={index} className={classes.formControl}>
-                      <InputLabel>Select column</InputLabel>
+                      <InputLabel>Check column</InputLabel>
                       <Select
                         onChange={handleColumnSelection}
                         name={`regexes${index}`}
@@ -341,7 +354,7 @@ const Convert = () => {
                   </Grid>
                   <Grid item>
                     <FormControl key={index} className={classes.formControl}>
-                      <InputLabel>Insert regex here</InputLabel>
+                      <InputLabel>With regex</InputLabel>
                       <Input
                         name={`regexes${index}`}
                         onChange={handleRegexInput}
@@ -358,6 +371,8 @@ const Convert = () => {
                 color="secondary"
                 component="label"
                 startIcon={<Publish />}
+                disabled={checkingXLSXColumns}
+                onClick={handleCheckXLSXColumns}
               >
                 Check columns
               </Button>

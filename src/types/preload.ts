@@ -9,6 +9,8 @@ const {
   deleteDOCX,
   getUploadedTemplates,
   getFileNameFromPath,
+  checkXLSXColumnsWithRegex,
+  checkXLSXRowColumnWithRegex,
   checkXLSX,
   getXLSXColumnNames,
 } = require("../utils/write");
@@ -25,4 +27,6 @@ export interface ElectronPreloadFunctions {
   ipcRenderer: typeof ipcRenderer;
   checkXLSX: typeof checkXLSX;
   getXLSXColumnNames: typeof getXLSXColumnNames;
+  checkXLSXColumnsWithRegex: typeof checkXLSXColumnsWithRegex;
+  checkXLSXRowColumnWithRegex: typeof checkXLSXRowColumnWithRegex;
 }
