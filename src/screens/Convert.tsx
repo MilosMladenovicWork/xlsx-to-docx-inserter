@@ -17,7 +17,8 @@ import {
   Snackbar,
   SnackbarCloseReason,
   CircularProgress,
-  colors,
+  Input,
+  Chip,
 } from "@material-ui/core";
 import { Alert, Color } from "@material-ui/lab";
 import { Description, Publish, Save, Delete } from "@material-ui/icons";
@@ -57,6 +58,13 @@ const useStyles = makeStyles(
 const Convert = () => {
   const classes = useStyles();
   const [uploadedFiles, setUploadedFiles] = useState<[] | string[]>([]);
+  const [xlsxColumnNames, setXLSXColumnNames] = useState<
+    { name: string; colNum: number }[]
+  >([]);
+  const [cellRegexes, setCellRegexes] = useState<
+    { id?: string; regex?: string; colNum: number | undefined }[]
+  >([{ id: undefined, regex: undefined, colNum: undefined }]);
+  const [checkingXLSXColumns, setCheckingXLSXColumns] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<unknown>("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [fileWrittingStatus, setFileWrittingStatus] = useState<{
@@ -88,6 +96,11 @@ const Convert = () => {
     const files: string[] = await window.electron.ipcRenderer.invoke(
       "uploadXLSX"
     );
+
+    const xlsxStatus: { label: string; valid: boolean; message?: string }[] =
+      await window.electron.checkXLSX(files);
+
+    console.log(xlsxStatus);
     // const files = await window.electron.ipcRenderer.invoke("uploadXLSX");
     setUploadedFiles((prevState) => [...new Set([...prevState, ...files])]);
   };
@@ -96,6 +109,20 @@ const Convert = () => {
     setUploadedFiles((prevState) =>
       prevState.filter((filePath) => filePath !== file)
     );
+  };
+
+  const handleCheckXLSXColumns = async () => {
+    setCheckingXLSXColumns(true);
+    
+    const checkXLSXColumnsStatuses =
+      await window.electron.checkXLSXColumnsWithRegex(
+        uploadedFiles,
+        cellRegexes
+      );
+
+    setCheckingXLSXColumns(false)
+    
+    console.log(checkXLSXColumnsStatuses)
   };
 
   const handleSelectedTemplate = (
@@ -109,6 +136,80 @@ const Convert = () => {
       setSelectedTemplate(uploadedTemplates[0]);
     }
   }, [uploadedTemplates]);
+
+  useEffect(() => {
+    const setColumnNames = async () => {
+      const columnNames = await window.electron.getXLSXColumnNames(
+        uploadedFiles
+      );
+      setXLSXColumnNames(columnNames);
+    };
+
+    setColumnNames();
+  }, [uploadedFiles]);
+
+  const handleColumnSelection = (
+    e: React.ChangeEvent<{
+      name?: string | undefined;
+      value: unknown;
+    }>
+  ) => {
+    const targetName = e.target.name as string;
+    const targetValue = e.target.value as number;
+    const stateIndex = cellRegexes.findIndex((item) => item.id === targetName);
+    if (stateIndex !== -1) {
+      setCellRegexes((prevState) => {
+        const newState = [...prevState];
+        newState[stateIndex].colNum = targetValue;
+        return newState;
+      });
+    } else {
+      setCellRegexes((prevState) => {
+        const newState = [
+          ...prevState,
+          { id: targetName, regex: undefined, colNum: targetValue },
+        ];
+        return newState;
+      });
+    }
+  };
+
+  const handleRegexInput: React.ChangeEventHandler<
+    HTMLInputElement | HTMLTextAreaElement
+  > = (e) => {
+    const targetName = e.target.name as string;
+    const targetValue = e.target.value;
+    const stateIndex = cellRegexes.findIndex((item) => item.id === targetName);
+    if (stateIndex !== -1) {
+      setCellRegexes((prevState) => {
+        const newState = [...prevState];
+        newState[stateIndex].regex = targetValue;
+        return newState;
+      });
+      if (e.target.value === "" && cellRegexes.length > 1) {
+        setCellRegexes((prevState) => {
+          const newState = [...prevState];
+          return newState.filter((item) => item.id !== targetName);
+        });
+      }
+      if (cellRegexes.every((item) => item.regex)) {
+        setCellRegexes((prevState) => {
+          const newState = [...prevState];
+          newState.push({ id: undefined, colNum: undefined, regex: undefined });
+          return newState;
+        });
+      }
+    } else {
+      setCellRegexes((prevState) => {
+        const newState = [...prevState];
+        const stateIndex = cellRegexes.findIndex(
+          (item) => item.id === undefined
+        );
+        newState[stateIndex].id = targetName;
+        return newState;
+      });
+    }
+  };
 
   return (
     <Grid container spacing={4}>
@@ -204,6 +305,80 @@ const Convert = () => {
             Upload XLSX File
           </Button>
         </Grid>
+        {uploadedFiles.length > 0 && (
+          <Grid container item spacing={1}>
+            <Grid item>
+              <Typography>Available columns</Typography>
+            </Grid>
+            <Grid container item spacing={1}>
+              {xlsxColumnNames &&
+                xlsxColumnNames.length > 0 &&
+                xlsxColumnNames.map(({ name, colNum }) => (
+                  <Grid item>
+                    <Chip
+                      avatar={<Avatar>{colNum}</Avatar>}
+                      label={name}
+                      color={"primary"}
+                    />
+                  </Grid>
+                ))}
+            </Grid>
+          </Grid>
+        )}
+        {uploadedFiles.length > 0 && (
+          <Grid container item spacing={2}>
+            <Grid item>
+              <Typography>
+                Select column and insert regex to check if data is all right
+              </Typography>
+            </Grid>
+            {cellRegexes.map((_data, index) => {
+              return (
+                <Grid container item spacing={2}>
+                  <Grid item>
+                    <FormControl key={index} className={classes.formControl}>
+                      <InputLabel>Check column</InputLabel>
+                      <Select
+                        onChange={handleColumnSelection}
+                        name={`regexes${index}`}
+                      >
+                        {xlsxColumnNames &&
+                          xlsxColumnNames.length > 0 &&
+                          xlsxColumnNames.map(({ name, colNum }) => (
+                            <MenuItem value={colNum} key={colNum}>
+                              {name}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                  <Grid item>
+                    <FormControl key={index} className={classes.formControl}>
+                      <InputLabel>With regex</InputLabel>
+                      <Input
+                        name={`regexes${index}`}
+                        onChange={handleRegexInput}
+                      />
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              );
+            })}
+            <Grid item>
+              {/* TODO: add logic to this button */}
+              <Button
+                variant="contained"
+                color="secondary"
+                component="label"
+                startIcon={<Publish />}
+                disabled={checkingXLSXColumns}
+                onClick={handleCheckXLSXColumns}
+              >
+                Check columns
+              </Button>
+            </Grid>
+          </Grid>
+        )}
       </Grid>
       <Grid container item xs={12} md={6} direction="column" spacing={2}>
         {!!uploadedTemplates.length && uploadedFiles.length > 0 && (

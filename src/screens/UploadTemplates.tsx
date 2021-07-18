@@ -38,7 +38,6 @@ export const useUploadedTemplates = (): [
   useEffect(() => {
     const getUploadedTemplates = async () => {
       const templates = await window.electron.getUploadedTemplates();
-      console.log(templates);
       setUploadedFiles(templates);
     };
     getUploadedTemplates();

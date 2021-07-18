@@ -12,7 +12,6 @@ const getUploadedTemplates = async () =>
         console.log("Unable to scan directory: " + err);
         return reject();
       }
-      console.log(files);
       resolve(files.map((file) => path.parse(file).name));
     });
   });
