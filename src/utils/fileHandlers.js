@@ -6,7 +6,7 @@ const RegexParser = require("regex-parser");
 
 const fs = require("fs");
 const path = require("path");
-const { ipcRenderer } = require("electron");
+const { ipcRenderer, shell } = require("electron");
 
 function errorHandler(error) {
   console.log(JSON.stringify({ error: error }));
@@ -35,11 +35,15 @@ const handleWorkbook = async function (
   let columnNames;
 
   const filesToWrite = [];
+  const directoryPath = await ipcRenderer.invoke("getAppDataDirectory");
+  const folderName = "templates";
 
-  worksheet.eachRow({ includeEmpty: true }, async function (row, rowNumber) {
+  const templatesFolder = path.join(directoryPath, folderName);
+
+  worksheet.eachRow(function (row, rowNumber) {
     const rowValues = row.values;
 
-    if (firstValidColumn !== undefined) {
+    if (firstValidColumn === undefined) {
       const indexOfValidColumn = rowValues.findIndex((value) => value != null);
       if (indexOfValidColumn !== -1) {
         firstValidColumn = indexOfValidColumn;
@@ -55,6 +59,7 @@ const handleWorkbook = async function (
       const nonNullCells = rowValues.filter((cell) => cell != null);
       nonNullCells.forEach((cell) => (replaceData[cell] = undefined));
     }
+
     if (firstValidRow < rowNumber && rowValues[firstValidColumn]) {
       rowValues.forEach((cell, index) => {
         const columnValue = columnNames[index];
@@ -65,7 +70,10 @@ const handleWorkbook = async function (
 
       // Load the docx file as binary content
       var content = fs.readFileSync(
-        path.resolve(__dirname, `../../templates/${templateName}.docx`),
+        path.resolve(
+          __dirname,
+          path.join(templatesFolder, `${templateName}.docx`)
+        ),
         "binary"
       );
 
@@ -203,10 +211,20 @@ const getFileNameFromPath = (filePath) => {
   return path.parse(filePath).name;
 };
 
+const openFile = async (item) => {
+  try {
+    const path = await item
+    await shell.openPath(path);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 module.exports = {
   writeFiles,
   saveFiles,
   savePDFFiles,
   getFileNameFromPath,
   readFile,
+  openFile,
 };

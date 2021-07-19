@@ -4,6 +4,7 @@ const {
   saveFiles,
   savePDFFiles,
   getFileNameFromPath,
+  openFile
 } = require("./src/utils/fileHandlers");
 
 const {
@@ -25,6 +26,7 @@ const { getUploadedTemplates } = require("./src/utils/getTemplate");
 contextBridge.exposeInMainWorld("electron", {
   writeFiles,
   saveFiles,
+  openFile,
   savePDFFiles,
   uploadDOCX,
   deleteDOCX,

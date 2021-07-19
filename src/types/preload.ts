@@ -14,7 +14,8 @@ const {
   checkXLSX,
   getXLSXColumnNames,
   getDOCXPlaceholders,
-  checkDOCXPlaceholders
+  checkDOCXPlaceholders,
+  openFile
 } = require("../utils/write");
 
 export interface ElectronPreloadFunctions {
@@ -33,4 +34,5 @@ export interface ElectronPreloadFunctions {
   checkXLSXRowColumnWithRegex: typeof checkXLSXRowColumnWithRegex;
   getDOCXPlaceholders: typeof getDOCXPlaceholders;
   checkDOCXPlaceholders: typeof checkDOCXPlaceholders;
+  openFile: typeof openFile;
 }
