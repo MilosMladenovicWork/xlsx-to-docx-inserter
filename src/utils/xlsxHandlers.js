@@ -17,7 +17,7 @@ const checkXLSX = async (filesPath, cellRegexes) => {
     let firstValidRow;
     let filledColumnsIndexes = [];
 
-    worksheet.eachRow({ includeEmpty: true }, function (row, rowNumber) {
+    worksheet.eachRow(function (row, rowNumber) {
       const rowValues = row.values;
 
       if (firstValidColumn === undefined) {
@@ -112,7 +112,7 @@ const checkXLSXColumnsWithRegex = async (filesPath, cellRegexes) => {
     let firstValidRow;
     let firstValidColumn;
 
-    worksheet.eachRow({ includeEmpty: true }, function (row, rowNumber) {
+    worksheet.eachRow(function (row, rowNumber) {
       const rowValues = row.values;
 
       if (firstValidRow !== undefined && firstValidColumn !== undefined) {
@@ -159,7 +159,7 @@ const getXLSXColumnNames = async (filesPath) => {
     let firstValidColumn;
     let firstValidRow;
 
-    worksheet.eachRow({ includeEmpty: true }, function (row, rowNumber) {
+    worksheet.eachRow(function (row, rowNumber) {
       const rowValues = row.values;
 
       if (firstValidColumn === undefined) {

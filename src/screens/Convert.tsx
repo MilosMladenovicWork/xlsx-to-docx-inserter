@@ -161,7 +161,7 @@ const Convert = () => {
 
     const docxStatuses = await window.electron.checkDOCXPlaceholders(
       placeholders,
-      xlsxColumnNames.map(column => column.name)
+      xlsxColumnNames.map((column) => column.name)
     );
 
     setSelectedTemplateStatuses(docxStatuses);
@@ -536,6 +536,13 @@ const Convert = () => {
             </Grid>
           </Grid>
         )}
+        <Button
+          onClick={async () => {
+            await window.electron.openFile(savedPDFFiles[0]);
+          }}
+        >
+          Preview PDF
+        </Button>
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={6000}
