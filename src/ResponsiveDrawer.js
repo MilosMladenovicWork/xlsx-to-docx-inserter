@@ -52,8 +52,21 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       width: "calc(100% - 530px)",
     },
-    height: "100vh",
+    height: `calc(100vh - ${theme.mixins.toolbar.minHeight + 10}px)`,
     overflow: "auto",
+    '&::-webkit-scrollbar': {
+      width: '6px'
+    },
+    '&::-webkit-scrollbar-track': {
+      backgroundColor: theme.palette.tertiary.main,
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: theme.palette.secondary.main,
+      borderRadius: '3px',
+    },
+    '&::-webkit-scrollbar-thumb:hover': {
+      backgroundColor: theme.palette.quartenary.main,
+    },
   },
 }));
 

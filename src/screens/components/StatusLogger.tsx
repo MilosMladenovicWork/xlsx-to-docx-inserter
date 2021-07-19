@@ -15,6 +15,21 @@ const useStyles = makeStyles(
     drawerPaper: {
       maxWidth: "fit-content",
     },
+    list: {
+      '&::-webkit-scrollbar': {
+        width: '6px'
+      },
+      '&::-webkit-scrollbar-track': {
+        backgroundColor: theme.palette.tertiary.main,
+      },
+      '&::-webkit-scrollbar-thumb': {
+        backgroundColor: theme.palette.secondary.main,
+        borderRadius: '3px',
+      },
+      '&::-webkit-scrollbar-thumb:hover': {
+        backgroundColor: theme.palette.quartenary.main,
+      },
+    },
     toolbar: theme.mixins.toolbar,
   }),
   { name: "ChooseTemplate" }
@@ -38,7 +53,7 @@ const StatusLogger = ({
         >
           <div className={classes.toolbar} />
           <Divider />
-          <List>
+          <List className={classes.list}>
             {XLSXUploadStatuses.map(({ valid, label, message }) => (
               <CollapsableListItem
                 valid={valid}

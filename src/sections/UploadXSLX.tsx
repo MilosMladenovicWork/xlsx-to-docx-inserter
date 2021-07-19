@@ -28,23 +28,22 @@ const useStyles = makeStyles(
       backgroundColor: theme.palette.background.paper,
       maxHeight: '200px',
       overflowY: 'auto',
-      // TODO: scroll styles now working
-      '& ::-webkit-scrollbar-thumb': {
+      '&::-webkit-scrollbar': {
+        width: '6px'
+      },
+      '&::-webkit-scrollbar-track': {
+        backgroundColor: theme.palette.tertiary.main,
+      },
+      '&::-webkit-scrollbar-thumb': {
         backgroundColor: theme.palette.secondary.main,
         borderRadius: '3px',
       },
-      '& ::-webkit-scrollbar-thumb:hover': {
-        backgroundColor: theme.palette.primary.main,
+      '&::-webkit-scrollbar-thumb:hover': {
+        backgroundColor: theme.palette.quartenary.main,
       },
-      '& ::-webkit-scrollbar-thumb:focus': {
-        backgroundColor: theme.palette.primary.main,
-      },
-      // scrollbarWidth: 'thin',
-      // scrollbarColor: `${theme.palette.secondary.main} rgba(0,0,0, 0)`,
-    },
-    '& $list::-webkit-scrollbar-thumb': {
-      backgroundColor: 'red',
-      borderRadius: '3px',
+      // support for Firefox
+      scrollbarWidth: 'thin',
+      scrollbarColor: `${theme.palette.secondary.main} rgba(0,0,0, 0)`,
     },
     listItem: { color: theme.palette.text.primary },
     listTitle: { color: theme.palette.text.primary },

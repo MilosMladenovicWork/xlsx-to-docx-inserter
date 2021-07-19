@@ -12,11 +12,11 @@ export interface SectionProps {
 const useStyles = makeStyles(
   (theme) => ({
     root: {
-      margin: theme.spacing(2, 0),
+      marginBottom: theme.spacing(2),
     },
     divider: {
       borderBottom: `1px solid ${theme.palette.secondary.main}`,
-      margin: theme.spacing(5, 0, 8, 0),
+      margin: theme.spacing(5, 0, 0, 0),
     },
     listTitle: { color: theme.palette.text.primary },
   }),
