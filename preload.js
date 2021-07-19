@@ -6,7 +6,12 @@ const {
   getFileNameFromPath,
 } = require("./src/utils/fileHandlers");
 
-const { uploadDOCX, deleteDOCX } = require("./src/utils/docxHandlers");
+const {
+  uploadDOCX,
+  deleteDOCX,
+  getDOCXPlaceholders,
+  checkDOCXPlaceholders,
+} = require("./src/utils/docxHandlers");
 
 const {
   checkXLSX,
@@ -29,5 +34,7 @@ contextBridge.exposeInMainWorld("electron", {
   checkXLSXColumnsWithRegex,
   checkXLSXRowColumnWithRegex,
   getXLSXColumnNames,
+  getDOCXPlaceholders,
+  checkDOCXPlaceholders,
   ipcRenderer,
 });

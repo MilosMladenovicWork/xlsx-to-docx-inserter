@@ -83,8 +83,14 @@ const Convert = () => {
   const [cellRegexes, setCellRegexes] = useState<
     { id?: string; regex?: string; colNum: number | undefined }[]
   >([{ id: undefined, regex: undefined, colNum: undefined }]);
+  const [checkXLSXColumnsStatuses, setCheckXLSXColumnsStatuses] = useState<
+    StatusType[]
+  >([]);
   const [checkingXLSXColumns, setCheckingXLSXColumns] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<unknown>("");
+  const [selectedTemplateStatuses, setSelectedTemplateStatuses] = useState<
+    StatusType[]
+  >([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [fileWrittingStatus, setFileWrittingStatus] = useState<{
     severity: Color | undefined;
@@ -94,6 +100,7 @@ const Convert = () => {
     message: undefined,
   });
   const [generatingDOCX, setGeneratingDOCX] = useState(false);
+  const [docxPlaceholders, setDocxPlaceholders] = useState<string[]>([]);
   const [savedDOCXFiles, setSavedDOCXFiles] = useState([]);
   const [generatingPDF, setGeneratingPDF] = useState(false);
   const [savedPDFFiles, setSavedPDFFiles] = useState([]);
@@ -138,22 +145,29 @@ const Convert = () => {
         cellRegexes
       );
 
-    setCheckingXLSXColumns(false);
+    setCheckXLSXColumnsStatuses(checkXLSXColumnsStatuses);
 
-    console.log(checkXLSXColumnsStatuses);
+    setCheckingXLSXColumns(false);
   };
 
-  const handleSelectedTemplate = (
+  const handleSelectedTemplate = async (
     event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
   ) => {
+    const placeholders = await window.electron.getDOCXPlaceholders(
+      event.target.value
+    );
+
+    setDocxPlaceholders(placeholders);
+
+    const docxStatuses = await window.electron.checkDOCXPlaceholders(
+      placeholders,
+      xlsxColumnNames.map(column => column.name)
+    );
+
+    setSelectedTemplateStatuses(docxStatuses);
+
     setSelectedTemplate(event.target.value);
   };
-
-  useEffect(() => {
-    if (uploadedTemplates.length) {
-      setSelectedTemplate(uploadedTemplates[0]);
-    }
-  }, [uploadedTemplates]);
 
   useEffect(() => {
     const setColumnNames = async () => {
@@ -424,6 +438,26 @@ const Convert = () => {
               </FormControl>
             </Grid>
           )}
+          {docxPlaceholders && docxPlaceholders.length > 0 && (
+            <Grid container item spacing={1}>
+              <Grid item>
+                <Typography>Available placeholders</Typography>
+              </Grid>
+              <Grid container item spacing={1}>
+                {docxPlaceholders &&
+                  docxPlaceholders.length > 0 &&
+                  docxPlaceholders.map((placeholder) => (
+                    <Grid item>
+                      <Chip
+                        // avatar={<Avatar>{colNum}</Avatar>}
+                        label={placeholder}
+                        color={"primary"}
+                      />
+                    </Grid>
+                  ))}
+              </Grid>
+            </Grid>
+          )}
           {uploadedFiles.length > 0 && selectedTemplate && (
             <Grid item>
               <div className={classes.wrapper}>
@@ -527,7 +561,13 @@ const Convert = () => {
             <Divider />
             <List>
               {XLSXUploadStatuses &&
-                XLSXUploadStatuses.map(({ valid, label, message }) => (
+                checkXLSXColumnsStatuses &&
+                selectedTemplateStatuses &&
+                [
+                  ...XLSXUploadStatuses,
+                  ...checkXLSXColumnsStatuses,
+                  ...selectedTemplateStatuses,
+                ].map(({ valid, label, message }) => (
                   <CollapsableListItem
                     valid={valid}
                     label={label}

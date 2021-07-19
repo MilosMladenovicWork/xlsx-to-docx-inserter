@@ -199,7 +199,6 @@ const savePDFFiles = async (filePaths) => {
   }
 };
 
-
 const getFileNameFromPath = (filePath) => {
   return path.parse(filePath).name;
 };
@@ -209,4 +208,5 @@ module.exports = {
   saveFiles,
   savePDFFiles,
   getFileNameFromPath,
+  readFile,
 };
