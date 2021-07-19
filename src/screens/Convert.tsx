@@ -1,18 +1,7 @@
-import {
-  Grid,
-  List,
-  makeStyles,
-  Snackbar,
-  SnackbarCloseReason,
-  Hidden,
-  Drawer,
-  Divider,
-} from "@material-ui/core";
+import { Grid, Snackbar, SnackbarCloseReason } from "@material-ui/core";
 import { Alert, Color } from "@material-ui/lab";
 import { useEffect, useState } from "react";
-import { AnimateSharedLayout, motion } from "framer-motion";
 import { useUploadedTemplates } from "./UploadTemplates";
-import CollapsableListItem from "./components/CollapsableListItem";
 
 import UploadXSLX from "../sections/UploadXSLX";
 import CheckData from "../sections/CheckData";
@@ -20,8 +9,7 @@ import AvailableColumns from "../sections/AvailableColumns";
 import ChooseTemplate from "../sections/ChooseTemplate";
 import SavePDF from "../sections/SavePDF";
 import SaveWordFiles from "../sections/SaveWordFiles";
-
-const MotionDrawer = motion(Drawer);
+import StatusLogger from "./components/StatusLogger";
 
 export interface StatusType {
   label: string;
@@ -29,21 +17,10 @@ export interface StatusType {
   message?: string;
 }
 
-const useStyles = makeStyles(
-  (theme) => ({
-    drawerPaper: {
-      maxWidth: "fit-content",
-    },
-    toolbar: theme.mixins.toolbar,
-  }),
-  { name: "Convert" }
-);
-
 // TODO: check if functions can be moved better
 // TODO: check if some states can be moved in components
 
 const Convert = () => {
-  const classes = useStyles();
   const [uploadedFiles, setUploadedFiles] = useState<[] | string[]>([]);
   const [XLSXUploadStatuses, setXLSXUploadStatuses] = useState<StatusType[]>(
     []
@@ -287,38 +264,7 @@ const Convert = () => {
           </Alert>
         </Snackbar>
       </Grid>
-      <Hidden xsDown implementation="css">
-        <AnimateSharedLayout>
-          <MotionDrawer
-            layout
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-            variant="permanent"
-            open
-            anchor="right"
-          >
-            <div className={classes.toolbar} />
-            <Divider />
-            <List>
-              {XLSXUploadStatuses &&
-                checkXLSXColumnsStatuses &&
-                selectedTemplateStatuses &&
-                [
-                  ...XLSXUploadStatuses,
-                  ...checkXLSXColumnsStatuses,
-                  ...selectedTemplateStatuses,
-                ].map(({ valid, label, message }) => (
-                  <CollapsableListItem
-                    valid={valid}
-                    label={label}
-                    message={message}
-                  />
-                ))}
-            </List>
-          </MotionDrawer>
-        </AnimateSharedLayout>
-      </Hidden>
+      <StatusLogger XLSXUploadStatuses={XLSXUploadStatuses} />
     </>
   );
 };

@@ -1,12 +1,12 @@
 import { List, makeStyles, Hidden, Divider, Drawer } from "@material-ui/core";
 
 import { AnimateSharedLayout, motion } from "framer-motion";
-import CollapsableListItem from "../components/CollapsableListItem";
+import CollapsableListItem from "./CollapsableListItem";
 import { StatusType } from "../Convert";
 
 const MotionDrawer = motion(Drawer);
 
-export interface ConsoleDrawerProps {
+export interface StatusLoggerProps {
   XLSXUploadStatuses: StatusType[];
 }
 
@@ -20,9 +20,9 @@ const useStyles = makeStyles(
   { name: "ChooseTemplate" }
 );
 
-const ConsoleDrawer = ({
+const StatusLogger = ({
   XLSXUploadStatuses,
-}: ConsoleDrawerProps) => {
+}: StatusLoggerProps) => {
   const classes = useStyles();
   return (
     <Hidden xsDown implementation="css">
@@ -53,4 +53,4 @@ const ConsoleDrawer = ({
   );
 };
 
-export default ConsoleDrawer;
+export default StatusLogger;
