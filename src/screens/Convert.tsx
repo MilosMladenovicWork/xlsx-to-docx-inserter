@@ -10,6 +10,7 @@ import ChooseTemplate from "../sections/ChooseTemplate";
 import SavePDF from "../sections/SavePDF";
 import SaveWordFiles from "../sections/SaveWordFiles";
 import StatusLogger from "./components/StatusLogger";
+import AvailablePlaceholders from "../sections/AvailablePlaceholders";
 
 export interface StatusType {
   label: string;
@@ -36,6 +37,9 @@ const Convert = () => {
   >([]);
   const [checkingXLSXColumns, setCheckingXLSXColumns] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [selectedTemplateStatuses, setSelectedTemplateStatuses] = useState<
+    StatusType[]
+  >([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [fileWrittingStatus, setFileWrittingStatus] = useState<{
     severity: Color | undefined;
@@ -153,8 +157,7 @@ const Convert = () => {
 
   return (
     <>
-      <Grid container direction="column" spacing={4}>
-        <Grid container item xs={12} direction="column" spacing={2}>
+      <Grid container direction="column" sm>
           <UploadXSLX
             title="Upload data"
             uploadedFiles={uploadedFiles}
@@ -182,7 +185,10 @@ const Convert = () => {
             uploadedTemplates={uploadedTemplates}
             isOpen={!!uploadedTemplates.length && uploadedFiles.length > 0}
           />
-
+          <AvailablePlaceholders
+              docxPlaceholders={docxPlaceholders}
+              isOpen={docxPlaceholders && docxPlaceholders.length > 0}
+          />
           <SaveWordFiles
             generatingDOCX={generatingDOCX}
             setGeneratingDOCX={setGeneratingDOCX}
@@ -191,7 +197,6 @@ const Convert = () => {
             setSnackbarOpen={setSnackbarOpen}
             uploadedFiles={uploadedFiles}
             selectedTemplate={selectedTemplate}
-            // TODO: Update this condition with better check if template is chosen
             isOpen={!!selectedTemplate && uploadedFiles.length > 0}
           />
           <SavePDF
@@ -201,7 +206,6 @@ const Convert = () => {
             setFileWrittingStatus={setFileWrittingStatus}
             setSnackbarOpen={setSnackbarOpen}
             savedDOCXFiles={savedDOCXFiles}
-            // TODO: Update this condition with better check if template is chosen
             isOpen={!!selectedTemplate && uploadedFiles.length > 0}
           />
         </Grid>
@@ -261,9 +265,13 @@ const Convert = () => {
               {fileWrittingStatus.message}
             </Alert>
           </Snackbar>
-        </Grid>
-        <StatusLogger XLSXUploadStatuses={XLSXUploadStatuses} />
       </Grid>
+      <StatusLogger
+          XLSXUploadStatuses={checkXLSXColumnsStatuses}
+          checkXLSXColumnsStatuses={checkXLSXColumnsStatuses}
+          selectedTemplateStatuses={selectedTemplateStatuses}
+          setCheckXLSXColumnsStatuses={setCheckXLSXColumnsStatuses}
+        />
     </>
   );
 };

@@ -8,6 +8,11 @@ const MotionDrawer = motion(Drawer);
 
 export interface StatusLoggerProps {
   XLSXUploadStatuses: StatusType[];
+  setCheckXLSXColumnsStatuses: React.Dispatch<
+    React.SetStateAction<StatusType[]>
+  >;
+  checkXLSXColumnsStatuses: StatusType[];
+  selectedTemplateStatuses: StatusType[];
 }
 
 const useStyles = makeStyles(
@@ -16,17 +21,17 @@ const useStyles = makeStyles(
       maxWidth: "fit-content",
     },
     list: {
-      '&::-webkit-scrollbar': {
-        width: '6px'
+      "&::-webkit-scrollbar": {
+        width: "6px",
       },
-      '&::-webkit-scrollbar-track': {
+      "&::-webkit-scrollbar-track": {
         backgroundColor: theme.palette.tertiary.main,
       },
-      '&::-webkit-scrollbar-thumb': {
+      "&::-webkit-scrollbar-thumb": {
         backgroundColor: theme.palette.secondary.main,
-        borderRadius: '3px',
+        borderRadius: "3px",
       },
-      '&::-webkit-scrollbar-thumb:hover': {
+      "&::-webkit-scrollbar-thumb:hover": {
         backgroundColor: theme.palette.quartenary.main,
       },
     },
@@ -37,6 +42,8 @@ const useStyles = makeStyles(
 
 const StatusLogger = ({
   XLSXUploadStatuses,
+  checkXLSXColumnsStatuses,
+  selectedTemplateStatuses,
 }: StatusLoggerProps) => {
   const classes = useStyles();
   return (
@@ -53,14 +60,21 @@ const StatusLogger = ({
         >
           <div className={classes.toolbar} />
           <Divider />
-          <List className={classes.list}>
-            {XLSXUploadStatuses.map(({ valid, label, message }) => (
-              <CollapsableListItem
-                valid={valid}
-                label={label}
-                message={message}
-              />
-            ))}
+          <List>
+            {XLSXUploadStatuses &&
+              checkXLSXColumnsStatuses &&
+              selectedTemplateStatuses &&
+              [
+                ...XLSXUploadStatuses,
+                ...checkXLSXColumnsStatuses,
+                ...selectedTemplateStatuses,
+              ].map(({ valid, label, message }) => (
+                <CollapsableListItem
+                  valid={valid}
+                  label={label}
+                  message={message}
+                />
+              ))}
           </List>
         </MotionDrawer>
       </AnimateSharedLayout>
