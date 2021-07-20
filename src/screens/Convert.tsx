@@ -1,34 +1,25 @@
 import {
-  Button,
   Grid,
   List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Avatar,
   makeStyles,
-  Typography,
-  IconButton,
-  Select,
-  MenuItem,
-  ListItemSecondaryAction,
-  FormControl,
-  InputLabel,
   Snackbar,
   SnackbarCloseReason,
-  CircularProgress,
-  Input,
-  Chip,
   Hidden,
   Drawer,
   Divider,
 } from "@material-ui/core";
 import { Alert, Color } from "@material-ui/lab";
-import { Description, Publish, Save, Delete } from "@material-ui/icons";
 import { useEffect, useState } from "react";
-import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
+import { AnimateSharedLayout, motion } from "framer-motion";
 import { useUploadedTemplates } from "./UploadTemplates";
 import CollapsableListItem from "./components/CollapsableListItem";
+
+import UploadXSLX from "../sections/UploadXSLX";
+import CheckData from "../sections/CheckData";
+import AvailableColumns from "../sections/AvailableColumns";
+import ChooseTemplate from "../sections/ChooseTemplate";
+import SavePDF from "../sections/SavePDF";
+import SaveWordFiles from "../sections/SaveWordFiles";
 
 const MotionDrawer = motion(Drawer);
 
@@ -40,29 +31,6 @@ export interface StatusType {
 
 const useStyles = makeStyles(
   (theme) => ({
-    list: {
-      backgroundColor: theme.palette.background.paper,
-    },
-    listItem: { color: theme.palette.text.primary },
-    listTitle: { color: theme.palette.text.primary },
-    formControl: {
-      minWidth: 120,
-    },
-    wrapper: {
-      position: "relative",
-      display: "inline",
-    },
-    buttonSuccess: {
-      backgroundColor: theme.palette.success.main,
-    },
-    buttonProgress: {
-      color: theme.palette.primary.main,
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      marginTop: -12,
-      marginLeft: -12,
-    },
     drawerPaper: {
       maxWidth: "fit-content",
     },
@@ -70,6 +38,9 @@ const useStyles = makeStyles(
   }),
   { name: "Convert" }
 );
+
+// TODO: check if functions can be moved better
+// TODO: check if some states can be moved in components
 
 const Convert = () => {
   const classes = useStyles();
@@ -87,10 +58,7 @@ const Convert = () => {
     StatusType[]
   >([]);
   const [checkingXLSXColumns, setCheckingXLSXColumns] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<unknown>("");
-  const [selectedTemplateStatuses, setSelectedTemplateStatuses] = useState<
-    StatusType[]
-  >([]);
+  const [selectedTemplate, setSelectedTemplate] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [fileWrittingStatus, setFileWrittingStatus] = useState<{
     severity: Color | undefined;
@@ -166,7 +134,7 @@ const Convert = () => {
 
     setSelectedTemplateStatuses(docxStatuses);
 
-    setSelectedTemplate(event.target.value);
+    setSelectedTemplate(event.target.value as string);
   };
 
   useEffect(() => {
@@ -206,296 +174,61 @@ const Convert = () => {
     }
   };
 
-  const handleRegexInput: React.ChangeEventHandler<
-    HTMLInputElement | HTMLTextAreaElement
-  > = (e) => {
-    const targetName = e.target.name as string;
-    const targetValue = e.target.value;
-    const stateIndex = cellRegexes.findIndex((item) => item.id === targetName);
-    if (stateIndex !== -1) {
-      setCellRegexes((prevState) => {
-        const newState = [...prevState];
-        newState[stateIndex].regex = targetValue;
-        return newState;
-      });
-      if (e.target.value === "" && cellRegexes.length > 1) {
-        setCellRegexes((prevState) => {
-          const newState = [...prevState];
-          return newState.filter((item) => item.id !== targetName);
-        });
-      }
-      if (cellRegexes.every((item) => item.regex)) {
-        setCellRegexes((prevState) => {
-          const newState = [...prevState];
-          newState.push({ id: undefined, colNum: undefined, regex: undefined });
-          return newState;
-        });
-      }
-    } else {
-      setCellRegexes((prevState) => {
-        const newState = [...prevState];
-        const stateIndex = cellRegexes.findIndex(
-          (item) => item.id === undefined
-        );
-        newState[stateIndex].id = targetName;
-        return newState;
-      });
-    }
-  };
-
   return (
     <>
       <Grid container spacing={4}>
         <Grid item container direction="column" xs={12} spacing={2}>
-          {uploadedFiles.length > 0 && (
-            <Grid item>
-              <AnimateSharedLayout>
-                <AnimatePresence>
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                      overflow: "hidden",
-                    }}
-                    animate={{
-                      opacity: 1,
-                      overflow: "hidden",
-                    }}
-                    exit={{
-                      opacity: 0,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <Typography
-                      className={classes.listTitle}
-                      variant="h6"
-                      gutterBottom
-                    >
-                      Upload data
-                    </Typography>
-                    <List className={classes.list}>
-                      <AnimateSharedLayout>
-                        <AnimatePresence>
-                          {uploadedFiles.map((file) => (
-                            <motion.div
-                              key={file}
-                              initial={{
-                                maxHeight: 0,
-                                opacity: 0,
-                                overflow: "hidden",
-                              }}
-                              animate={{
-                                maxHeight: 100,
-                                opacity: 1,
-                                overflow: "hidden",
-                              }}
-                              exit={{
-                                maxHeight: 0,
-                                opacity: 0,
-                                overflow: "hidden",
-                              }}
-                              layout
-                            >
-                              <ListItem className={classes.listItem}>
-                                <ListItemAvatar>
-                                  <Avatar>
-                                    <Description />
-                                  </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                  primary={window.electron.getFileNameFromPath(
-                                    file
-                                  )}
-                                  primaryTypographyProps={{ noWrap: true }}
-                                />
-                                <ListItemSecondaryAction>
-                                  <IconButton
-                                    edge="end"
-                                    aria-label="delete"
-                                    onClick={() => removeUploadedFile(file)}
-                                  >
-                                    <Delete />
-                                  </IconButton>
-                                </ListItemSecondaryAction>
-                              </ListItem>
-                            </motion.div>
-                          ))}
-                        </AnimatePresence>
-                      </AnimateSharedLayout>
-                    </List>
-                  </motion.div>
-                </AnimatePresence>
-              </AnimateSharedLayout>
-            </Grid>
-          )}
-          <Grid item>
-            <Button
-              variant="contained"
-              onClick={onUploadHandler}
-              color="secondary"
-              component="label"
-              startIcon={<Publish />}
-            >
-              Upload XLSX File
-            </Button>
-          </Grid>
-          {uploadedFiles.length > 0 && (
-            <Grid container item spacing={1}>
-              <Grid item>
-                <Typography>Available columns</Typography>
-              </Grid>
-              <Grid container item spacing={1}>
-                {xlsxColumnNames &&
-                  xlsxColumnNames.length > 0 &&
-                  xlsxColumnNames.map(({ name, colNum }) => (
-                    <Grid item>
-                      <Chip
-                        avatar={<Avatar>{colNum}</Avatar>}
-                        label={name}
-                        color={"primary"}
-                      />
-                    </Grid>
-                  ))}
-              </Grid>
-            </Grid>
-          )}
-          {uploadedFiles.length > 0 && (
-            <Grid container item spacing={2}>
-              <Grid item>
-                <Typography>
-                  Select column and insert regex to check if data is all right
-                </Typography>
-              </Grid>
-              {cellRegexes.map((_data, index) => {
-                return (
-                  <Grid container item spacing={2}>
-                    <Grid item>
-                      <FormControl key={index} className={classes.formControl}>
-                        <InputLabel>Check column</InputLabel>
-                        <Select
-                          onChange={handleColumnSelection}
-                          name={`regexes${index}`}
-                        >
-                          {xlsxColumnNames &&
-                            xlsxColumnNames.length > 0 &&
-                            xlsxColumnNames.map(({ name, colNum }) => (
-                              <MenuItem value={colNum} key={colNum}>
-                                {name}
-                              </MenuItem>
-                            ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item>
-                      <FormControl key={index} className={classes.formControl}>
-                        <InputLabel>With regex</InputLabel>
-                        <Input
-                          name={`regexes${index}`}
-                          onChange={handleRegexInput}
-                        />
-                      </FormControl>
-                    </Grid>
-                  </Grid>
-                );
-              })}
-              <Grid item>
-                {/* TODO: add logic to this button */}
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  component="label"
-                  startIcon={<Publish />}
-                  disabled={checkingXLSXColumns}
-                  onClick={handleCheckXLSXColumns}
-                >
-                  Check columns
-                </Button>
-              </Grid>
-            </Grid>
-          )}
+          <UploadXSLX
+            title="Upload data"
+            uploadedFiles={uploadedFiles}
+            removeUploadedFile={removeUploadedFile}
+            onUploadHandler={onUploadHandler}
+            isOpen={uploadedFiles.length > 0}
+          />
+          <AvailableColumns
+            isOpen={uploadedFiles.length > 0}
+            xlsxColumnNames={xlsxColumnNames}
+          />
+          <CheckData
+            cellRegexes={cellRegexes}
+            setCellRegexes={setCellRegexes}
+            handleColumnSelection={handleColumnSelection}
+            xlsxColumnNames={xlsxColumnNames}
+            checkingXLSXColumns={checkingXLSXColumns}
+            handleCheckXLSXColumns={handleCheckXLSXColumns}
+            isOpen={uploadedFiles.length > 0}
+          />
         </Grid>
         <Grid container item xs={12} direction="column" spacing={2}>
-          {!!uploadedTemplates.length && uploadedFiles.length > 0 && (
-            <Grid item>
-              <Typography
-                className={classes.listTitle}
-                variant="h6"
-                gutterBottom
-              >
-                Choose template
-              </Typography>
-              <FormControl className={classes.formControl}>
-                <InputLabel>Template</InputLabel>
-                <Select
-                  onChange={handleSelectedTemplate}
-                  value={selectedTemplate}
-                >
-                  {uploadedTemplates.map((template) => (
-                    <MenuItem value={template} key={template}>
-                      {template}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-          )}
-          {docxPlaceholders && docxPlaceholders.length > 0 && (
-            <Grid container item spacing={1}>
-              <Grid item>
-                <Typography>Available placeholders</Typography>
-              </Grid>
-              <Grid container item spacing={1}>
-                {docxPlaceholders &&
-                  docxPlaceholders.length > 0 &&
-                  docxPlaceholders.map((placeholder) => (
-                    <Grid item>
-                      <Chip
-                        // avatar={<Avatar>{colNum}</Avatar>}
-                        label={placeholder}
-                        color={"primary"}
-                      />
-                    </Grid>
-                  ))}
-              </Grid>
-            </Grid>
-          )}
-          {uploadedFiles.length > 0 && selectedTemplate && (
-            <Grid item>
-              <div className={classes.wrapper}>
-                <Button
-                  variant="contained"
-                  disabled={generatingDOCX}
-                  onClick={async () => {
-                    setGeneratingDOCX(true);
-                    let savedFiles = await window.electron.saveFiles(
-                      uploadedFiles,
-                      selectedTemplate
-                    );
-                    setGeneratingDOCX(false);
-                    if (savedFiles && savedFiles.length > 0) {
-                      setSavedDOCXFiles(savedFiles);
-                      setFileWrittingStatus({
-                        severity: "success",
-                        message: `${savedFiles.length} files successfully saved`,
-                      });
-                      setSnackbarOpen(false);
-                      setSnackbarOpen(true);
-                    }
-                  }}
-                  color="secondary"
-                  component="label"
-                  startIcon={<Save />}
-                >
-                  Save Word Files
-                </Button>
-                {generatingDOCX && (
-                  <CircularProgress
-                    size={24}
-                    className={classes.buttonProgress}
-                  />
-                )}
-              </div>
-            </Grid>
-          )}
+          <ChooseTemplate
+            title="Choose template"
+            handleSelectedTemplate={handleSelectedTemplate}
+            selectedTemplate={selectedTemplate}
+            uploadedTemplates={uploadedTemplates}
+            isOpen={!!uploadedTemplates.length && uploadedFiles.length > 0}
+          />
+
+          <SaveWordFiles
+            generatingDOCX={generatingDOCX}
+            setGeneratingDOCX={setGeneratingDOCX}
+            setSavedDOCXFiles={setSavedDOCXFiles}
+            setFileWrittingStatus={setFileWrittingStatus}
+            setSnackbarOpen={setSnackbarOpen}
+            uploadedFiles={uploadedFiles}
+            selectedTemplate={selectedTemplate}
+            // TODO: Update this condition with better check if template is chosen
+            isOpen={!!selectedTemplate && uploadedFiles.length > 0}
+          />
+          <SavePDF
+            generatingPDF={generatingPDF}
+            setGeneratingPDF={setGeneratingPDF}
+            setSavedPDFFiles={setSavedPDFFiles}
+            setFileWrittingStatus={setFileWrittingStatus}
+            setSnackbarOpen={setSnackbarOpen}
+            savedDOCXFiles={savedDOCXFiles}
+            // TODO: Update this condition with better check if template is chosen
+            isOpen={!!selectedTemplate && uploadedFiles.length > 0}
+          />
         </Grid>
         {uploadedFiles.length > 0 && selectedTemplate && (
           <Grid container item xs={12} direction="column" spacing={2}>
@@ -543,6 +276,7 @@ const Convert = () => {
         >
           Preview PDF
         </Button>
+
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={6000}
