@@ -1,4 +1,4 @@
-import { Grid, Snackbar, SnackbarCloseReason } from "@material-ui/core";
+import { Grid, Snackbar, SnackbarCloseReason, Button } from "@material-ui/core";
 import { Alert, Color } from "@material-ui/lab";
 import { useEffect, useState } from "react";
 import { useUploadedTemplates } from "./UploadTemplates";
@@ -158,96 +158,56 @@ const Convert = () => {
   return (
     <>
       <Grid container direction="column" sm>
-          <UploadXSLX
-            title="Upload data"
-            uploadedFiles={uploadedFiles}
-            removeUploadedFile={removeUploadedFile}
-            onUploadHandler={onUploadHandler}
-            isOpen={uploadedFiles.length > 0}
-          />
-          <AvailableColumns
-            isOpen={uploadedFiles.length > 0}
-            xlsxColumnNames={xlsxColumnNames}
-          />
-          <CheckData
-            cellRegexes={cellRegexes}
-            setCellRegexes={setCellRegexes}
-            handleColumnSelection={handleColumnSelection}
-            xlsxColumnNames={xlsxColumnNames}
-            checkingXLSXColumns={checkingXLSXColumns}
-            handleCheckXLSXColumns={handleCheckXLSXColumns}
-            isOpen={uploadedFiles.length > 0}
-          />
-          <ChooseTemplate
-            title="Choose template"
-            handleSelectedTemplate={handleSelectedTemplate}
-            selectedTemplate={selectedTemplate}
-            uploadedTemplates={uploadedTemplates}
-            isOpen={!!uploadedTemplates.length && uploadedFiles.length > 0}
-          />
-          <AvailablePlaceholders
-              docxPlaceholders={docxPlaceholders}
-              isOpen={docxPlaceholders && docxPlaceholders.length > 0}
-          />
-          <SaveWordFiles
-            generatingDOCX={generatingDOCX}
-            setGeneratingDOCX={setGeneratingDOCX}
-            setSavedDOCXFiles={setSavedDOCXFiles}
-            setFileWrittingStatus={setFileWrittingStatus}
-            setSnackbarOpen={setSnackbarOpen}
-            uploadedFiles={uploadedFiles}
-            selectedTemplate={selectedTemplate}
-            isOpen={!!selectedTemplate && uploadedFiles.length > 0}
-          />
-          <SavePDF
-            generatingPDF={generatingPDF}
-            setGeneratingPDF={setGeneratingPDF}
-            setSavedPDFFiles={setSavedPDFFiles}
-            setFileWrittingStatus={setFileWrittingStatus}
-            setSnackbarOpen={setSnackbarOpen}
-            savedDOCXFiles={savedDOCXFiles}
-            isOpen={!!selectedTemplate && uploadedFiles.length > 0}
-          />
-        </Grid>
-        {uploadedFiles.length > 0 && selectedTemplate && (
-          <Grid container item xs={12} direction="column" spacing={2}>
-            <Grid item>
-              <div className={classes.wrapper}>
-                <Button
-                  variant="contained"
-                  disabled={generatingPDF}
-                  onClick={async () => {
-                    setGeneratingPDF(true);
-                    let savedFiles = await window.electron.savePDFFiles(
-                      savedDOCXFiles
-                    );
-                    setGeneratingPDF(false);
-                    if (savedFiles && savedFiles.length > 0) {
-                      setSavedPDFFiles(savedFiles);
-                      setFileWrittingStatus({
-                        severity: "success",
-                        message: `${savedFiles.length} files successfully saved`,
-                      });
-                      setSnackbarOpen(false);
-                      setSnackbarOpen(true);
-                    }
-                  }}
-                  color="secondary"
-                  component="label"
-                  startIcon={<Save />}
-                >
-                  Save PDF Files
-                </Button>
-                {generatingPDF && (
-                  <CircularProgress
-                    size={24}
-                    className={classes.buttonProgress}
-                  />
-                )}
-              </div>
-            </Grid>
-          </Grid>
-        )}
+        <UploadXSLX
+          title="Upload data"
+          uploadedFiles={uploadedFiles}
+          removeUploadedFile={removeUploadedFile}
+          onUploadHandler={onUploadHandler}
+          isOpen={uploadedFiles.length > 0}
+        />
+        <AvailableColumns
+          isOpen={uploadedFiles.length > 0}
+          xlsxColumnNames={xlsxColumnNames}
+        />
+        <CheckData
+          cellRegexes={cellRegexes}
+          setCellRegexes={setCellRegexes}
+          handleColumnSelection={handleColumnSelection}
+          xlsxColumnNames={xlsxColumnNames}
+          checkingXLSXColumns={checkingXLSXColumns}
+          handleCheckXLSXColumns={handleCheckXLSXColumns}
+          isOpen={uploadedFiles.length > 0}
+        />
+        <ChooseTemplate
+          title="Choose template"
+          handleSelectedTemplate={handleSelectedTemplate}
+          selectedTemplate={selectedTemplate}
+          uploadedTemplates={uploadedTemplates}
+          isOpen={!!uploadedTemplates.length && uploadedFiles.length > 0}
+        />
+        <AvailablePlaceholders
+          docxPlaceholders={docxPlaceholders}
+          isOpen={docxPlaceholders && docxPlaceholders.length > 0}
+        />
+        <SaveWordFiles
+          generatingDOCX={generatingDOCX}
+          setGeneratingDOCX={setGeneratingDOCX}
+          setSavedDOCXFiles={setSavedDOCXFiles}
+          setFileWrittingStatus={setFileWrittingStatus}
+          setSnackbarOpen={setSnackbarOpen}
+          uploadedFiles={uploadedFiles}
+          selectedTemplate={selectedTemplate}
+          isOpen={!!selectedTemplate && uploadedFiles.length > 0}
+        />
+        <SavePDF
+          generatingPDF={generatingPDF}
+          setGeneratingPDF={setGeneratingPDF}
+          setSavedPDFFiles={setSavedPDFFiles}
+          setFileWrittingStatus={setFileWrittingStatus}
+          setSnackbarOpen={setSnackbarOpen}
+          savedDOCXFiles={savedDOCXFiles}
+          isOpen={!!selectedTemplate && uploadedFiles.length > 0}
+        />
         <Button
           onClick={async () => {
             await window.electron.openFile(savedPDFFiles[0]);
@@ -256,22 +216,22 @@ const Convert = () => {
           Preview PDF
         </Button>
 
-          <Snackbar
-            open={snackbarOpen}
-            autoHideDuration={6000}
-            onClose={handleSnackbarClose}
-          >
-            <Alert severity={fileWrittingStatus.severity}>
-              {fileWrittingStatus.message}
-            </Alert>
-          </Snackbar>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+        >
+          <Alert severity={fileWrittingStatus.severity}>
+            {fileWrittingStatus.message}
+          </Alert>
+        </Snackbar>
       </Grid>
       <StatusLogger
-          XLSXUploadStatuses={checkXLSXColumnsStatuses}
-          checkXLSXColumnsStatuses={checkXLSXColumnsStatuses}
-          selectedTemplateStatuses={selectedTemplateStatuses}
-          setCheckXLSXColumnsStatuses={setCheckXLSXColumnsStatuses}
-        />
+        XLSXUploadStatuses={checkXLSXColumnsStatuses}
+        checkXLSXColumnsStatuses={checkXLSXColumnsStatuses}
+        selectedTemplateStatuses={selectedTemplateStatuses}
+        setCheckXLSXColumnsStatuses={setCheckXLSXColumnsStatuses}
+      />
     </>
   );
 };
