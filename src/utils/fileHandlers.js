@@ -211,9 +211,136 @@ const getFileNameFromPath = (filePath) => {
   return path.parse(filePath).name;
 };
 
+const getFirstValidColumn = async (filePath) => {
+  const workbook = new Excel.Workbook();
+  await workbook.xlsx.readFile(filePath);
+  const worksheet = workbook.getWorksheet();
+  let firstValidColumn;
+
+  worksheet.eachRow(function (row) {
+    const rowValues = row.values;
+
+    if (firstValidColumn === undefined) {
+      const indexOfValidColumn = rowValues.findIndex((value) => value != null);
+      if (indexOfValidColumn !== -1) {
+        firstValidColumn = indexOfValidColumn;
+      }
+    }
+  });
+
+  return firstValidColumn;
+};
+
+const getFirstValidRow = async (filePath) => {
+  const workbook = new Excel.Workbook();
+  await workbook.xlsx.readFile(filePath);
+  const worksheet = workbook.getWorksheet();
+  let firstValidRow;
+
+  worksheet.eachRow(function (row, rowNumber) {
+    const rowValues = row.values;
+
+    if (firstValidRow === undefined) {
+      if (rowValues.some((value) => value != null)) {
+        firstValidRow = rowNumber;
+      }
+    }
+  });
+
+  return firstValidRow;
+};
+
+const savePreviewPDF = async (docxFilePath) => {
+  const folder = await ipcRenderer.invoke("folderDialog");
+
+  if (folder.filePaths.length > 0) {
+    try {
+      const pdfFiles = await convertDOCXToPDF(
+        [docxFilePath],
+        folder.filePaths[0]
+      );
+      return pdfFiles;
+    } catch (error) {
+      // Catch compilation errors (errors caused by the compilation of the template: misplaced tags)
+      errorHandler(error);
+    }
+  }
+};
+
+const savePreviewDOCX = async (filePath, templateName) => {
+  const firstValidColumn = await getFirstValidColumn(filePath);
+  const firstValidRow = await getFirstValidRow(filePath);
+
+  const workbook = new Excel.Workbook();
+  await workbook.xlsx.readFile(filePath);
+  const worksheet = workbook.getWorksheet();
+
+  const columnNames = await worksheet.getRow(firstValidRow);
+  const dataRow = await worksheet.getRow(firstValidRow + 1);
+
+  let replaceData = {};
+
+  if (firstValidRow !== undefined) {
+    dataRow.values.forEach((cell, index) => {
+      const columnName = columnNames.values[index];
+      if (index >= firstValidColumn && columnName !== undefined) {
+        replaceData[columnName] = cell;
+      }
+    });
+
+    const directoryPath = await ipcRenderer.invoke("getAppDataDirectory");
+    const folderName = "templates";
+    const templatesFolder = path.join(directoryPath, folderName);
+
+    // Load the docx file as binary content
+    var content = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        path.join(templatesFolder, `${templateName}.docx`)
+      ),
+      "binary"
+    );
+
+    let zip = new PizZip(content);
+    let doc;
+    doc = new Docxtemplater(zip, {
+      paragraphLoop: true,
+      linebreaks: true,
+    });
+    //set the templateVariables
+    doc.setData(replaceData);
+
+    try {
+      // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+      doc.render();
+    } catch (error) {
+      // Catch rendering errors (errors relating to the rendering of the template: angularParser throws an error)
+      errorHandler(error);
+    }
+
+    const buf = doc.getZip().generate({ type: "nodebuffer" });
+
+    const folder = await ipcRenderer.invoke("folderDialog");
+
+    try {
+      const wordFile = await writeFile(
+        path.resolve(
+          folder.filePaths[0],
+          `${templateName} ${dataRow.values[firstValidColumn]}.docx`
+        ),
+        buf
+      );
+
+      return [wordFile];
+    } catch (e) {
+      console.log(e);
+    }
+  }
+};
+
 const openFile = async (item) => {
   try {
-    const path = await item
+    const path = await item;
     await shell.openPath(path);
   } catch (e) {
     console.log(e);
@@ -227,4 +354,6 @@ module.exports = {
   getFileNameFromPath,
   readFile,
   openFile,
+  savePreviewPDF,
+  savePreviewDOCX,
 };

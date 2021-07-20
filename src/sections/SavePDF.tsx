@@ -1,6 +1,6 @@
 import { Grid, Button, makeStyles, CircularProgress } from "@material-ui/core";
 import { Color } from "@material-ui/lab";
-import { Save } from "@material-ui/icons";
+import { Save, Visibility } from "@material-ui/icons";
 import Section from "../screens/components/Section";
 
 export interface SavePDFProps {
@@ -25,7 +25,7 @@ const useStyles = makeStyles(
       display: "inline",
     },
     buttonProgress: {
-      color: theme.palette.primary.main,
+      color: theme.palette.secondary.main,
       position: "absolute",
       top: "50%",
       left: "50%",
@@ -48,34 +48,58 @@ const SavePDF = ({
   const classes = useStyles();
   return (
     <Section isOpen={isOpen}>
-      <div className={classes.wrapper}>
-        <Button
-          variant="contained"
-          disabled={generatingPDF}
-          onClick={async () => {
-            setGeneratingPDF(true);
-            let savedFiles = await window.electron.savePDFFiles(savedDOCXFiles);
-            setGeneratingPDF(false);
-            if (savedFiles && savedFiles.length > 0) {
-              setSavedPDFFiles(savedFiles);
-              setFileWrittingStatus({
-                severity: "success",
-                message: `${savedFiles.length} files successfully saved`,
-              });
-              setSnackbarOpen(false);
-              setSnackbarOpen(true);
-            }
-          }}
-          color="secondary"
-          component="label"
-          startIcon={<Save />}
-        >
-          Save PDF Files
-        </Button>
-        {generatingPDF && (
-          <CircularProgress size={24} className={classes.buttonProgress} />
-        )}
-      </div>
+      <Grid container spacing={2}>
+        <Grid item>
+          <Button
+            startIcon={<Visibility />}
+            variant="contained"
+            color="secondary"
+            onClick={async () => {
+              const filePaths = await window.electron.savePreviewPDF(
+                savedDOCXFiles[0]
+              );
+
+              if (filePaths && filePaths.length > 0) {
+                await window.electron.openFile(filePaths[0]);
+              }
+            }}
+          >
+            Preview PDF
+          </Button>
+        </Grid>
+        <Grid item>
+          <div className={classes.wrapper}>
+            <Button
+              variant="contained"
+              disabled={generatingPDF}
+              onClick={async () => {
+                setGeneratingPDF(true);
+                let savedFiles = await window.electron.savePDFFiles(
+                  savedDOCXFiles
+                );
+                setGeneratingPDF(false);
+                if (savedFiles && savedFiles.length > 0) {
+                  setSavedPDFFiles(savedFiles);
+                  setFileWrittingStatus({
+                    severity: "success",
+                    message: `${savedFiles.length} files successfully saved`,
+                  });
+                  setSnackbarOpen(false);
+                  setSnackbarOpen(true);
+                }
+              }}
+              color="secondary"
+              component="label"
+              startIcon={<Save />}
+            >
+              Save PDF Files
+            </Button>
+            {generatingPDF && (
+              <CircularProgress size={24} className={classes.buttonProgress} />
+            )}
+          </div>
+        </Grid>
+      </Grid>
     </Section>
   );
 };
