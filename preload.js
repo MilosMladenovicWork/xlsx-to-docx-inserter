@@ -4,7 +4,9 @@ const {
   saveFiles,
   savePDFFiles,
   getFileNameFromPath,
-  openFile
+  openFile,
+  savePreviewPDF,
+  savePreviewDOCX,
 } = require("./src/utils/fileHandlers");
 
 const {
@@ -38,5 +40,7 @@ contextBridge.exposeInMainWorld("electron", {
   getXLSXColumnNames,
   getDOCXPlaceholders,
   checkDOCXPlaceholders,
+  savePreviewPDF,
+  savePreviewDOCX,
   ipcRenderer,
 });

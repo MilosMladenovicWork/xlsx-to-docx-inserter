@@ -206,15 +206,12 @@ const Convert = () => {
           setFileWrittingStatus={setFileWrittingStatus}
           setSnackbarOpen={setSnackbarOpen}
           savedDOCXFiles={savedDOCXFiles}
-          isOpen={!!selectedTemplate && uploadedFiles.length > 0}
+          isOpen={
+            !!selectedTemplate &&
+            savedDOCXFiles.length > 0 &&
+            uploadedFiles.length > 0
+          }
         />
-        <Button
-          onClick={async () => {
-            await window.electron.openFile(savedPDFFiles[0]);
-          }}
-        >
-          Preview PDF
-        </Button>
 
         <Snackbar
           open={snackbarOpen}
@@ -227,7 +224,7 @@ const Convert = () => {
         </Snackbar>
       </Grid>
       <StatusLogger
-        XLSXUploadStatuses={checkXLSXColumnsStatuses}
+        XLSXUploadStatuses={XLSXUploadStatuses}
         checkXLSXColumnsStatuses={checkXLSXColumnsStatuses}
         selectedTemplateStatuses={selectedTemplateStatuses}
         setCheckXLSXColumnsStatuses={setCheckXLSXColumnsStatuses}

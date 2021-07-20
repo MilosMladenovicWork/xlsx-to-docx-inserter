@@ -15,7 +15,9 @@ const {
   getXLSXColumnNames,
   getDOCXPlaceholders,
   checkDOCXPlaceholders,
-  openFile
+  savePreviewPDF,
+  openFile,
+  savePreviewDOCX,
 } = require("../utils/write");
 
 export interface ElectronPreloadFunctions {
@@ -35,4 +37,6 @@ export interface ElectronPreloadFunctions {
   getDOCXPlaceholders: typeof getDOCXPlaceholders;
   checkDOCXPlaceholders: typeof checkDOCXPlaceholders;
   openFile: typeof openFile;
+  savePreviewPDF: typeof savePreviewPDF;
+  savePreviewDOCX: typeof savePreviewDOCX;
 }
