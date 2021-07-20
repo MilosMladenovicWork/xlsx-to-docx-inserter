@@ -13,6 +13,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import MenuIcon from "@material-ui/icons/Menu";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
+import Grid from "@material-ui/core/Grid";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Autorenew, Publish } from "@material-ui/icons";
 import { Link } from "react-router-dom";
@@ -43,17 +44,48 @@ const useStyles = makeStyles((theme) => ({
   },
   // necessary for content to be below app bar
   toolbar: theme.mixins.toolbar,
+  rootDrawer: {
+    "&::-webkit-scrollbar": {
+      width: "6px",
+      height: "6px",
+    },
+    "&::-webkit-scrollbar-track": {
+      backgroundColor: theme.palette.tertiary.main,
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: theme.palette.secondary.main,
+      borderRadius: "3px",
+    },
+    "&::-webkit-scrollbar-thumb:hover": {
+      backgroundColor: theme.palette.quartenary.main,
+    },
+  },
   drawerPaper: {
     width: drawerWidth,
   },
   content: {
     marginTop: theme.mixins.toolbar.minHeight + 10,
-    padding: theme.spacing(3, 3, 3, 3),
+    padding: theme.spacing(4, 3),
+    height: `calc(100vh - ${theme.mixins.toolbar.minHeight + 10}px)`,
+    overflowY: "auto",
     [theme.breakpoints.up("sm")]: {
-      width: "calc(100% - 530px)",
+      width: "calc(100% - 530px)", // substract scrollbar
+      padding: theme.spacing(4, 5),
     },
-    height: "100vh",
-    overflow: "auto",
+    "&::-webkit-scrollbar": {
+      width: "6px",
+      height: "6px",
+    },
+    "&::-webkit-scrollbar-track": {
+      backgroundColor: theme.palette.tertiary.main,
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: theme.palette.secondary.main,
+      borderRadius: "3px",
+    },
+    "&::-webkit-scrollbar-thumb:hover": {
+      backgroundColor: theme.palette.quartenary.main,
+    },
   },
 }));
 
@@ -138,6 +170,7 @@ function ResponsiveDrawer(props) {
         <Hidden xsDown implementation="css">
           <Drawer
             classes={{
+              root: classes.rootDrawer,
               paper: classes.drawerPaper,
             }}
             variant="permanent"
@@ -147,7 +180,7 @@ function ResponsiveDrawer(props) {
           </Drawer>
         </Hidden>
       </nav>
-      <main className={classes.content}>{children}</main>
+      <Grid container className={classes.content}>{children}</Grid>
     </div>
   );
 }

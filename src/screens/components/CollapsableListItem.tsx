@@ -19,6 +19,9 @@ const useStyles = makeStyles(
     message: {
       width: "100%",
     },
+    gridContainer: {
+      flexWrap: 'nowrap',
+    }
   }),
   { name: "ColapsableListItem" }
 );
@@ -44,7 +47,7 @@ const CollapsableListItem = ({
         severity={valid ? "success" : "error"}
       >
         <AlertTitle>
-          <Grid container justify="space-between">
+          <Grid className={classes.gridContainer} container justify="space-between">
             <Grid item>{label}</Grid>
             <Grid item>
               {message && (open ? <ExpandLess /> : <ExpandMore />)}
