@@ -24,12 +24,16 @@ export interface UploadXSLXProps {
 
 const useStyles = makeStyles(
   (theme) => ({
+    root: {
+      marginBottom: theme.spacing(2),
+    },
     list: {
       backgroundColor: theme.palette.background.paper,
       maxHeight: '200px',
       overflowY: 'auto',
       '&::-webkit-scrollbar': {
-        width: '6px'
+        width: '6px',
+        height: '6px',
       },
       '&::-webkit-scrollbar-track': {
         backgroundColor: theme.palette.tertiary.main,
@@ -49,7 +53,7 @@ const useStyles = makeStyles(
     listTitle: { color: theme.palette.text.primary },
     divider: {
       borderBottom: `1px solid ${theme.palette.secondary.main}`,
-      margin: theme.spacing(5, 0, 8, 0),
+      margin: theme.spacing(5, 0, 0, 0),
     },
   }),
   { name: "UploadXSLX" }
@@ -64,7 +68,7 @@ const UploadXSLX = ({
 }: UploadXSLXProps) => {
   const classes = useStyles();
   return (
-    <>
+    <div className={classes.root}>
       <Section isOpen={isOpen} hasDivider={false} title={title}>
         <List className={classes.list}>
           <AnimateSharedLayout>
@@ -127,7 +131,7 @@ const UploadXSLX = ({
         </Button>
       </Grid>
       <div className={classes.divider}></div>
-    </>
+    </div>
   );
 };
 

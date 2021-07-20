@@ -153,8 +153,8 @@ const Convert = () => {
 
   return (
     <>
-      <Grid container spacing={4}>
-        <Grid item container direction="column" xs={12} spacing={2}>
+      <Grid container direction="column" spacing={4}>
+        <Grid container item xs={12} direction="column" spacing={2}>
           <UploadXSLX
             title="Upload data"
             uploadedFiles={uploadedFiles}
@@ -175,8 +175,6 @@ const Convert = () => {
             handleCheckXLSXColumns={handleCheckXLSXColumns}
             isOpen={uploadedFiles.length > 0}
           />
-        </Grid>
-        <Grid container item xs={12} direction="column" spacing={2}>
           <ChooseTemplate
             title="Choose template"
             handleSelectedTemplate={handleSelectedTemplate}
@@ -254,17 +252,18 @@ const Convert = () => {
           Preview PDF
         </Button>
 
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={6000}
-          onClose={handleSnackbarClose}
-        >
-          <Alert severity={fileWrittingStatus.severity}>
-            {fileWrittingStatus.message}
-          </Alert>
-        </Snackbar>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={handleSnackbarClose}
+          >
+            <Alert severity={fileWrittingStatus.severity}>
+              {fileWrittingStatus.message}
+            </Alert>
+          </Snackbar>
+        </Grid>
+        <StatusLogger XLSXUploadStatuses={XLSXUploadStatuses} />
       </Grid>
-      <StatusLogger XLSXUploadStatuses={XLSXUploadStatuses} />
     </>
   );
 };

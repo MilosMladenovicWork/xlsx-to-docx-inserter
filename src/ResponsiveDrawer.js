@@ -55,7 +55,8 @@ const useStyles = makeStyles((theme) => ({
     height: `calc(100vh - ${theme.mixins.toolbar.minHeight + 10}px)`,
     overflow: "auto",
     '&::-webkit-scrollbar': {
-      width: '6px'
+      width: '6px',
+      height: '6px',
     },
     '&::-webkit-scrollbar-track': {
       backgroundColor: theme.palette.tertiary.main,
