@@ -65,6 +65,7 @@ export const useEmailHTMLTemplates = (): [
 
 // TODO: check if functions can be moved better
 // TODO: check if some states can be moved in components
+// TODO: TODO: avilable placeholders stays on page when you remove file
 
 const Convert = () => {
   const [uploadedFiles, setUploadedFiles] = useState<[] | string[]>([]);
@@ -263,6 +264,7 @@ const Convert = () => {
           xlsxColumnNames={xlsxColumnNames}
           checkingXLSXColumns={checkingXLSXColumns}
           handleCheckXLSXColumns={handleCheckXLSXColumns}
+          checkXLSXColumnsStatuses={checkXLSXColumnsStatuses}
           isOpen={uploadedFiles.length > 0}
         />
         <ChooseTemplate
@@ -270,11 +272,12 @@ const Convert = () => {
           handleSelectedTemplate={handleSelectedTemplate}
           selectedTemplate={selectedTemplate}
           uploadedTemplates={uploadedTemplates}
+          selectedTemplateStatuses={selectedTemplateStatuses}
           isOpen={!!uploadedTemplates.length && uploadedFiles.length > 0}
         />
         <AvailablePlaceholders
           docxPlaceholders={docxPlaceholders}
-          isOpen={docxPlaceholders && docxPlaceholders.length > 0}
+          isOpen={docxPlaceholders && uploadedFiles.length > 0}
         />
         <SaveWordFiles
           generatingDOCX={generatingDOCX}

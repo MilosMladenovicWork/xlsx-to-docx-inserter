@@ -4,6 +4,8 @@ import ResponsiveDrawer from "./ResponsiveDrawer";
 import Convert from "./screens/Convert";
 import { HashRouter, Route } from "react-router-dom";
 import UploadTemplates from "./screens/UploadTemplates";
+import Settings from "./screens/Settings";
+
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -25,6 +27,7 @@ function App() {
         <ResponsiveDrawer>
           <Route path="/" exact component={Convert} />
           <Route path="/upload-templates" component={UploadTemplates} />
+          <Route path="/settings" component={Settings} />
         </ResponsiveDrawer>
       </HashRouter>
     </Box>

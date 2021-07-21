@@ -1,21 +1,24 @@
+import {
+  makeStyles,
+  useTheme,
+  Divider,
+  AppBar,
+  Drawer,
+  Hidden,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+  Grid,
+} from "@material-ui/core";
+import { Autorenew, Publish, Settings } from "@material-ui/icons";
+import MenuIcon from "@material-ui/icons/Menu";
 import React from "react";
 import PropTypes from "prop-types";
-import AppBar from "@material-ui/core/AppBar";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import Divider from "@material-ui/core/Divider";
-import Drawer from "@material-ui/core/Drawer";
-import Hidden from "@material-ui/core/Hidden";
-import IconButton from "@material-ui/core/IconButton";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import MenuIcon from "@material-ui/icons/Menu";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { Autorenew, Publish } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 
 const drawerWidth = 240;
@@ -69,7 +72,8 @@ const useStyles = makeStyles((theme) => ({
     height: `calc(100vh - ${theme.mixins.toolbar.minHeight + 10}px)`,
     overflowY: "auto",
     [theme.breakpoints.up("sm")]: {
-      width: "calc(100% - 530px)", // substract scrollbar
+      width: "calc(100% - 513px)", // substract scrollbar
+      // width: 'auto',
       padding: theme.spacing(4, 5),
     },
     "&::-webkit-scrollbar": {
@@ -123,6 +127,16 @@ function ResponsiveDrawer(props) {
           </ListItem>
         </Link>
       </List>
+      <List>
+        <Link to="/settings">
+          <ListItem button>
+            <ListItemIcon>
+              <Settings />
+            </ListItemIcon>
+            <ListItemText primary={"Settings"} />
+          </ListItem>
+        </Link>
+      </List>
     </div>
   );
 
@@ -152,6 +166,7 @@ function ResponsiveDrawer(props) {
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Hidden smUp implementation="css">
           <Drawer
+            disablePortal
             container={container}
             variant="temporary"
             anchor={theme.direction === "rtl" ? "right" : "left"}
@@ -180,7 +195,9 @@ function ResponsiveDrawer(props) {
           </Drawer>
         </Hidden>
       </nav>
-      <Grid container className={classes.content}>{children}</Grid>
+      <Grid container className={classes.content}>
+        {children}
+      </Grid>
     </div>
   );
 }
