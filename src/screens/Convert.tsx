@@ -1,4 +1,15 @@
-import { Grid, Snackbar, SnackbarCloseReason, Button } from "@material-ui/core";
+import {
+  Grid,
+  Snackbar,
+  SnackbarCloseReason,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Button,
+  Typography,
+  Input,
+} from "@material-ui/core";
 import { Alert, Color } from "@material-ui/lab";
 import { useEffect, useState } from "react";
 import { useUploadedTemplates } from "./UploadTemplates";
@@ -17,6 +28,40 @@ export interface StatusType {
   valid: boolean;
   message?: string;
 }
+
+export const useEmailTextTemplates = (): [
+  string[],
+  React.Dispatch<React.SetStateAction<string[]>>
+] => {
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+
+  useEffect(() => {
+    const getUploadedTemplates = async () => {
+      const templates = await window.electron.getEmailTextTemplates();
+      setUploadedFiles(templates);
+    };
+    getUploadedTemplates();
+  }, []);
+
+  return [uploadedFiles, setUploadedFiles];
+};
+
+export const useEmailHTMLTemplates = (): [
+  string[],
+  React.Dispatch<React.SetStateAction<string[]>>
+] => {
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+
+  useEffect(() => {
+    const getUploadedTemplates = async () => {
+      const templates = await window.electron.getEmailHTMLTemplates();
+      setUploadedFiles(templates);
+    };
+    getUploadedTemplates();
+  }, []);
+
+  return [uploadedFiles, setUploadedFiles];
+};
 
 // TODO: check if functions can be moved better
 // TODO: check if some states can be moved in components
@@ -52,9 +97,47 @@ const Convert = () => {
   const [docxPlaceholders, setDocxPlaceholders] = useState<string[]>([]);
   const [savedDOCXFiles, setSavedDOCXFiles] = useState([]);
   const [generatingPDF, setGeneratingPDF] = useState(false);
+  const [generatingPreviewPDF, setGeneratingPreviewPDF] = useState(false);
   const [savedPDFFiles, setSavedPDFFiles] = useState([]);
 
   const [uploadedTemplates, setUploadedTemplates] = useUploadedTemplates();
+  const [emailTextTemplates, setEmailTextTemplates] = useEmailTextTemplates();
+  const [emailHTMLTemplates, setEmailHTMLTemplates] = useEmailHTMLTemplates();
+
+  const [emailFrom, setEmailFrom] = useState("");
+  const [emailTo, setEmailTo] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+
+  const [selectedEmailTextTemplate, setSelectedEmailTextTemplate] =
+    useState("");
+  const [selectedEmailHTMLTemplate, setSelectedEmailHTMLTemplate] =
+    useState("");
+
+  const handleEmailFrom: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    setEmailFrom(e.target.value);
+  };
+
+  const handleEmailTo: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    setEmailTo(e.target.value);
+  };
+
+  const handleEmailSubject: React.ChangeEventHandler<HTMLInputElement> = (
+    e
+  ) => {
+    setEmailSubject(e.target.value);
+  };
+
+  const handleEmailTextTemplate = (
+    event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
+  ) => {
+    setSelectedEmailTextTemplate(event.target.value as string);
+  };
+
+  const handleEmailHTMLTemplate = (
+    event: React.ChangeEvent<{ name?: string | undefined; value: unknown }>
+  ) => {
+    setSelectedEmailHTMLTemplate(event.target.value as string);
+  };
 
   const handleSnackbarClose = (
     event: React.SyntheticEvent<any, Event>,
@@ -88,13 +171,17 @@ const Convert = () => {
   const handleCheckXLSXColumns = async () => {
     setCheckingXLSXColumns(true);
 
-    const checkXLSXColumnsStatuses =
-      await window.electron.checkXLSXColumnsWithRegex(
-        uploadedFiles,
-        cellRegexes
-      );
+    try {
+      const checkXLSXColumnsStatuses =
+        await window.electron.checkXLSXColumnsWithRegex(
+          uploadedFiles,
+          cellRegexes
+        );
 
-    setCheckXLSXColumnsStatuses(checkXLSXColumnsStatuses);
+      setCheckXLSXColumnsStatuses(checkXLSXColumnsStatuses);
+    } catch (e) {
+      console.log(e);
+    }
 
     setCheckingXLSXColumns(false);
   };
@@ -202,6 +289,8 @@ const Convert = () => {
         <SavePDF
           generatingPDF={generatingPDF}
           setGeneratingPDF={setGeneratingPDF}
+          generatingPreviewPDF={generatingPreviewPDF}
+          setGeneratingPreviewPDF={setGeneratingPreviewPDF}
           setSavedPDFFiles={setSavedPDFFiles}
           setFileWrittingStatus={setFileWrittingStatus}
           setSnackbarOpen={setSnackbarOpen}
@@ -212,7 +301,77 @@ const Convert = () => {
             uploadedFiles.length > 0
           }
         />
-
+        {xlsxColumnNames && savedPDFFiles && savedPDFFiles.length > 0 && (
+          <>
+            <Typography>
+              Use {} with column name between to insert data from that column
+            </Typography>
+            <FormControl>
+              <InputLabel>Email from</InputLabel>
+              <Input name="emailFrom" onChange={handleEmailFrom} />
+            </FormControl>
+            <FormControl>
+              <InputLabel>Email to</InputLabel>
+              <Input name="emailTo" onChange={handleEmailTo} />
+            </FormControl>
+            <FormControl>
+              <InputLabel>Email from</InputLabel>
+              <Input name="emailSubject" onChange={handleEmailSubject} />
+            </FormControl>
+            <FormControl>
+              <InputLabel>Email text template</InputLabel>
+              <Select
+                onChange={handleEmailTextTemplate}
+                value={selectedEmailTextTemplate}
+              >
+                {emailTextTemplates.map((name) => (
+                  <MenuItem value={name} key={name}>
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl>
+              <InputLabel>Email html template</InputLabel>
+              <Select
+                onChange={handleEmailHTMLTemplate}
+                value={selectedEmailHTMLTemplate}
+              >
+                {emailHTMLTemplates.map((name) => (
+                  <MenuItem value={name} key={name}>
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </>
+        )}
+        {xlsxColumnNames &&
+          savedPDFFiles &&
+          savedPDFFiles.length > 0 &&
+          emailFrom &&
+          emailTo &&
+          emailSubject &&
+          selectedEmailTextTemplate &&
+          selectedEmailTextTemplate && (
+            <>
+              <Button
+                variant="contained"
+                onClick={async () =>
+                  await window.electron.previewEmail(
+                    emailFrom,
+                    emailTo,
+                    emailSubject,
+                    selectedEmailTextTemplate,
+                    selectedEmailHTMLTemplate,
+                    uploadedFiles[0]
+                  )
+                }
+              >
+                Preview emails
+              </Button>
+            </>
+          )}
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={6000}

@@ -41,6 +41,22 @@ ipcMain.handle("uploadDOCX", async () => {
   return files.filePaths;
 });
 
+ipcMain.handle("uploadEmailHTML", async () => {
+  const files = await dialog.showOpenDialog({
+    properties: ["openFile"],
+    filters: [{ name: ".html", extensions: ["html"] }],
+  });
+  return files.filePaths;
+});
+
+ipcMain.handle("uploadEmailText", async () => {
+  const files = await dialog.showOpenDialog({
+    properties: ["openFile"],
+    filters: [{ name: ".txt", extensions: ["txt"] }],
+  });
+  return files.filePaths;
+});
+
 ipcMain.handle("getAppDataDirectory", () => {
   return app.getPath("appData");
 });

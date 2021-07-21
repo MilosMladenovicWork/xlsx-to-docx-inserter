@@ -79,7 +79,6 @@ const checkXLSX = async (filesPath, cellRegexes) => {
   }
 };
 
-// TODO: make this function work on its own for check columns functionality
 const checkXLSXRowColumnWithRegex = (cellRegexes, row, rowNum, statuses) => {
   // cellRegex array of objects that has keys columnNum and regex
   if (cellRegexes && cellRegexes.length > 0) {

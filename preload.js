@@ -25,6 +25,16 @@ const {
 
 const { getUploadedTemplates } = require("./src/utils/getTemplate");
 
+const {
+  previewEmail,
+  uploadEmailText,
+  deleteEmailText,
+  uploadEmailHTML,
+  deleteEmailHTML,
+  getEmailHTMLTemplates,
+  getEmailTextTemplates,
+} = require("./src/utils/emailHandlers");
+
 contextBridge.exposeInMainWorld("electron", {
   writeFiles,
   saveFiles,
@@ -42,5 +52,12 @@ contextBridge.exposeInMainWorld("electron", {
   checkDOCXPlaceholders,
   savePreviewPDF,
   savePreviewDOCX,
+  previewEmail,
+  uploadEmailText,
+  deleteEmailText,
+  uploadEmailHTML,
+  deleteEmailHTML,
+  getEmailHTMLTemplates,
+  getEmailTextTemplates,
   ipcRenderer,
 });

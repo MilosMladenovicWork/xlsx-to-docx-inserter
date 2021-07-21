@@ -18,6 +18,14 @@ const {
   savePreviewPDF,
   openFile,
   savePreviewDOCX,
+  sendEmails,
+  uploadEmailText,
+  deleteEmailText,
+  uploadEmailHTML,
+  deleteEmailHTML,
+  getEmailHTMLTemplates,
+  getEmailTextTemplates,
+  previewEmail,
 } = require("../utils/write");
 
 export interface ElectronPreloadFunctions {
@@ -39,4 +47,12 @@ export interface ElectronPreloadFunctions {
   openFile: typeof openFile;
   savePreviewPDF: typeof savePreviewPDF;
   savePreviewDOCX: typeof savePreviewDOCX;
+  sendEmails: typeof sendEmails;
+  uploadEmailText: typeof uploadEmailText;
+  deleteEmailText: typeof deleteEmailText;
+  uploadEmailHTML: typeof uploadEmailHTML;
+  deleteEmailHTML: typeof deleteEmailHTML;
+  getEmailHTMLTemplates: typeof getEmailHTMLTemplates;
+  getEmailTextTemplates: typeof getEmailTextTemplates;
+  previewEmail: typeof previewEmail;
 }
