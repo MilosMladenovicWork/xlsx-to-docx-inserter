@@ -6,6 +6,8 @@ import Section from "../screens/components/Section";
 export interface SavePDFProps {
   generatingPDF: boolean;
   setGeneratingPDF: React.Dispatch<React.SetStateAction<boolean>>;
+  generatingPreviewPDF: boolean;
+  setGeneratingPreviewPDF: React.Dispatch<React.SetStateAction<boolean>>;
   setSavedPDFFiles: React.Dispatch<React.SetStateAction<never[]>>;
   setFileWrittingStatus: React.Dispatch<
     React.SetStateAction<{
@@ -38,7 +40,9 @@ const useStyles = makeStyles(
 
 const SavePDF = ({
   generatingPDF,
+  generatingPreviewPDF,
   setGeneratingPDF,
+  setGeneratingPreviewPDF,
   setSavedPDFFiles,
   setFileWrittingStatus,
   setSnackbarOpen,
@@ -50,22 +54,31 @@ const SavePDF = ({
     <Section isOpen={isOpen}>
       <Grid container spacing={2}>
         <Grid item>
-          <Button
-            startIcon={<Visibility />}
-            variant="contained"
-            color="secondary"
-            onClick={async () => {
-              const filePaths = await window.electron.savePreviewPDF(
-                savedDOCXFiles[0]
-              );
+          <div className={classes.wrapper}>
+            <Button
+              startIcon={<Visibility />}
+              disabled={generatingPreviewPDF}
+              variant="contained"
+              color="secondary"
+              onClick={async () => {
+                setGeneratingPreviewPDF(true);
+                const filePaths = await window.electron.savePreviewPDF(
+                  savedDOCXFiles[0]
+                );
 
-              if (filePaths && filePaths.length > 0) {
-                await window.electron.openFile(filePaths[0]);
-              }
-            }}
-          >
-            Preview PDF
-          </Button>
+                setGeneratingPreviewPDF(false);
+
+                if (filePaths && filePaths.length > 0) {
+                  await window.electron.openFile(filePaths[0]);
+                }
+              }}
+            >
+              Preview PDF
+            </Button>
+            {generatingPreviewPDF && (
+              <CircularProgress size={24} className={classes.buttonProgress} />
+            )}
+          </div>
         </Grid>
         <Grid item>
           <div className={classes.wrapper}>

@@ -128,11 +128,10 @@ const writeFile = async (path, data) =>
     });
   });
 
-const readFile = async (path) =>
+const readFile = async (path, encoding = null) =>
   new Promise((resolve, reject) => {
-    fs.readFile(path, (error, data) => {
+    fs.readFile(path, encoding, (error, data) => {
       if (error) reject(error);
-
       resolve(data);
     });
   });
@@ -356,4 +355,6 @@ module.exports = {
   openFile,
   savePreviewPDF,
   savePreviewDOCX,
+  getFirstValidRow,
+  getFirstValidColumn
 };
