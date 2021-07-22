@@ -2,10 +2,12 @@ import { Box, makeStyles } from "@material-ui/core";
 import { Cancel, CheckCircle, Error } from "@material-ui/icons";
 import { ReactNode } from "react";
 import theme from "../../theme/AppTheme";
+import clsx from "clsx";
 
 export interface ValidationWrapperProps {
   children: ReactNode;
   isValid?: "success" | "error" | "warning" | "neutral";
+  className?: string
 }
 
 const useStyles = makeStyles(
@@ -20,13 +22,13 @@ const useStyles = makeStyles(
       alignItems: "flex-end",
     },
   }),
-  { name: "Convert" }
+  { name: "ValidationWrapper" }
 );
 
-const ValidationWrapper = ({ children, isValid }: ValidationWrapperProps) => {
+const ValidationWrapper = ({ children, isValid, className }: ValidationWrapperProps) => {
   const classes = useStyles();
   return (
-    <div className={classes.root}>
+    <div className={clsx(classes.root, className)}>
       {children}
       <Box color={`${isValid}.main`} className={classes.iconWrapper}>
         {isValid === "success" && (

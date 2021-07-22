@@ -195,6 +195,7 @@ function ResponsiveDrawer(props) {
           </Drawer>
         </Hidden>
       </nav>
+      {/* TODO: find solution for when right side bar is not available */}
       <Grid container className={classes.content}>
         {children}
       </Grid>

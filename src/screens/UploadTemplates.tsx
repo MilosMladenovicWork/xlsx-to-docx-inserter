@@ -15,6 +15,7 @@ import { Description, Publish, Delete } from "@material-ui/icons";
 import { useEffect, useState } from "react";
 import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
 import { useEmailHTMLTemplates, useEmailTextTemplates } from "./Convert";
+import ValidationWrapper from "./components/ValidationWrapper";
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -23,10 +24,15 @@ const useStyles = makeStyles(
     },
     list: {
       backgroundColor: theme.palette.background.paper,
+      margin: theme.spacing(2, 0, 0, 0),
+    },
+    divider: {
+      borderBottom: `1px solid ${theme.palette.secondary.main}`,
+      margin: theme.spacing(5, 0, 0, 0),
     },
     listItem: { color: theme.palette.text.primary },
     listTitle: { color: theme.palette.text.primary },
-    button: {
+    buttonWrapper: {
       marginTop: theme.spacing(4),
     },
   }),
@@ -93,8 +99,17 @@ const UploadTemplates = () => {
     );
   };
 
+  const emailTextValid = () => {
+    if (uploadedEmailText.length > 0) return "success";
+    else return "neutral";
+  };
+  const htmlEmailValid = () => {
+    if (uploadedEmailHTML.length > 0) return "success";
+    else return "neutral";
+  };
+
   return (
-    <Grid container direction="column">
+    <Grid container direction="column" sm>
       <AnimateSharedLayout>
         <AnimatePresence>
           {uploadedFiles.length > 0 && (
@@ -172,103 +187,105 @@ const UploadTemplates = () => {
           )}
         </AnimatePresence>
       </AnimateSharedLayout>
-      <Grid className={classes.button} item sm={4}>
-      <Button
-        variant="contained"
-        onClick={onUploadHandler}
-        color="secondary"
-        component="label"
-        startIcon={<Publish />}
-      >
-        Upload DOCX File
-      </Button>
-      </Grid>
-      <Grid item xs={12} sm={6}>
+      <ValidationWrapper className={classes.buttonWrapper} isValid="success">
+        <Button
+          variant="contained"
+          onClick={onUploadHandler}
+          color="secondary"
+          component="label"
+          startIcon={<Publish />}
+        >
+          Upload DOCX File
+        </Button>
+      </ValidationWrapper>
+      <div className={classes.divider}></div>
+      {uploadedEmailText.length > 0 && (
         <AnimateSharedLayout>
           <AnimatePresence>
-            {uploadedEmailText.length > 0 && (
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  overflow: "hidden",
-                }}
-                animate={{
-                  opacity: 1,
-                  overflow: "hidden",
-                }}
-                exit={{
-                  opacity: 0,
-                  overflow: "hidden",
-                }}
-                layout
-              >
-                <List className={classes.list}>
-                  <AnimateSharedLayout>
-                    <AnimatePresence>
-                      {uploadedEmailText.map((file) => (
-                        <motion.div
-                          key={file}
-                          initial={{
-                            maxHeight: 0,
-                            opacity: 0,
-                            overflow: "hidden",
-                          }}
-                          animate={{
-                            maxHeight: 100,
-                            opacity: 1,
-                            overflow: "hidden",
-                          }}
-                          exit={{
-                            maxHeight: 0,
-                            opacity: 0,
-                            overflow: "hidden",
-                          }}
-                          layout
-                        >
-                          <ListItem className={classes.listItem}>
-                            <ListItemAvatar>
-                              <Avatar>
-                                <Description />
-                              </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                              primary={file}
-                              primaryTypographyProps={{ noWrap: true }}
-                            />
-                            <ListItemSecondaryAction>
-                              <IconButton
-                                edge="end"
-                                aria-label="delete"
-                                onClick={() => onDeleteEmailTextHandler(file)}
-                              >
-                                <Delete />
-                              </IconButton>
-                            </ListItemSecondaryAction>
-                          </ListItem>
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </AnimateSharedLayout>
-                </List>
-              </motion.div>
-            )}
+            <motion.div
+              initial={{
+                opacity: 0,
+                overflow: "hidden",
+              }}
+              animate={{
+                opacity: 1,
+                overflow: "hidden",
+              }}
+              exit={{
+                opacity: 0,
+                overflow: "hidden",
+              }}
+              layout
+            >
+              <List className={classes.list}>
+                <AnimateSharedLayout>
+                  <AnimatePresence>
+                    {uploadedEmailText.map((file) => (
+                      <motion.div
+                        key={file}
+                        initial={{
+                          maxHeight: 0,
+                          opacity: 0,
+                          overflow: "hidden",
+                        }}
+                        animate={{
+                          maxHeight: 100,
+                          opacity: 1,
+                          overflow: "hidden",
+                        }}
+                        exit={{
+                          maxHeight: 0,
+                          opacity: 0,
+                          overflow: "hidden",
+                        }}
+                        layout
+                      >
+                        <ListItem className={classes.listItem}>
+                          <ListItemAvatar>
+                            <Avatar>
+                              <Description />
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={file}
+                            primaryTypographyProps={{ noWrap: true }}
+                          />
+                          <ListItemSecondaryAction>
+                            <IconButton
+                              edge="end"
+                              aria-label="delete"
+                              onClick={() => onDeleteEmailTextHandler(file)}
+                            >
+                              <Delete />
+                            </IconButton>
+                          </ListItemSecondaryAction>
+                        </ListItem>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </AnimateSharedLayout>
+              </List>
+            </motion.div>
           </AnimatePresence>
         </AnimateSharedLayout>
-      </Grid>
-      <Grid container item xs={12} spacing={2} wrap="wrap">
-        <Grid item xs={12} sm={6}>
-          <Button
-            variant="contained"
-            onClick={onUploadEmailTextHandler}
-            color="secondary"
-            component="label"
-            startIcon={<Publish />}
-          >
-            Upload Email Text
-          </Button>
-        </Grid>
-      </Grid>
-      <Grid item xs={12} sm={6}>
+      )}
+      <ValidationWrapper
+        className={classes.buttonWrapper}
+        isValid={emailTextValid()}
+      >
+        <Button
+          variant="contained"
+          onClick={onUploadEmailTextHandler}
+          color="secondary"
+          component="label"
+          startIcon={<Publish />}
+        >
+          Upload Email Text
+        </Button>
+      </ValidationWrapper>
+      <div className={classes.divider}></div>
+
+      {setUploadedEmailHTML.length && (
         <AnimateSharedLayout>
           <AnimatePresence>
             {uploadedEmailHTML.length > 0 && (
@@ -339,20 +356,22 @@ const UploadTemplates = () => {
             )}
           </AnimatePresence>
         </AnimateSharedLayout>
-      </Grid>
-      <Grid container item xs={12} spacing={2} wrap="wrap">
-        <Grid item xs={12} sm={6}>
-          <Button
-            variant="contained"
-            onClick={onUploadEmailHTMLHandler}
-            color="secondary"
-            component="label"
-            startIcon={<Publish />}
-          >
-            Upload Email HTML
-          </Button>
-        </Grid>
-      </Grid>
+      )}
+      <ValidationWrapper
+        className={classes.buttonWrapper}
+        isValid={htmlEmailValid()}
+      >
+        <Button
+          variant="contained"
+          onClick={onUploadEmailHTMLHandler}
+          color="secondary"
+          component="label"
+          startIcon={<Publish />}
+        >
+          Upload Email HTML
+        </Button>
+      </ValidationWrapper>
+      <div className={classes.divider}></div>
     </Grid>
   );
 };

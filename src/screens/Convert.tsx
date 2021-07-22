@@ -272,7 +272,6 @@ const Convert = () => {
           handleSelectedTemplate={handleSelectedTemplate}
           selectedTemplate={selectedTemplate}
           uploadedTemplates={uploadedTemplates}
-          selectedTemplateStatuses={selectedTemplateStatuses}
           isOpen={!!uploadedTemplates.length && uploadedFiles.length > 0}
         />
         <AvailablePlaceholders

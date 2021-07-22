@@ -11,7 +11,6 @@ import ValidationWrapper from "../screens/components/ValidationWrapper";
 import { StatusType } from '../screens/Convert';
 
 export interface ChooseTemplateProps {
-  selectedTemplateStatuses: StatusType[];
   handleSelectedTemplate: (
     event: React.ChangeEvent<{
       name?: string | undefined;
@@ -35,7 +34,6 @@ const useStyles = makeStyles(
 );
 
 const ChooseTemplate = ({
-  selectedTemplateStatuses,
   handleSelectedTemplate,
   selectedTemplate,
   uploadedTemplates,
