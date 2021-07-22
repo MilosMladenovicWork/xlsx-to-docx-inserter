@@ -9,7 +9,7 @@ import {
   IconButton,
 } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Section from "../screens/components/Section";
 import theme from "../theme/AppTheme";
 
@@ -33,24 +33,48 @@ const UploadTemplates = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [host, setHost] = useState("");
+  const [service, setService] = useState("");
   const [port, setPort] = useState(0);
   const [secure, setSecure] = useState(false);
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
 
   useEffect(() => {
-    const defaultHost = "smtp.asdada.asdada";
-    const defaultPort = 123;
-    const defaultSecure = false;
-    const defaultUser = "defaultUser";
-    const defaultPass = "defaultPass";
-
-    setHost(defaultHost);
-    setPort(defaultPort);
-    setSecure(defaultSecure);
-    setUser(defaultUser);
-    setPass(defaultPass);
+    const getConfiguration = async () => {
+      const configurationJSON = await window.electron.getConfigurationJSON();
+      if (configurationJSON) {
+        const configurationObject = JSON.parse(configurationJSON);
+        const {
+          host,
+          service,
+          port,
+          secure,
+          auth: { user, pass },
+        } = configurationObject;
+        setHost(host);
+        setService(service);
+        setPort(port);
+        setSecure(secure);
+        setUser(user);
+        setPass(pass);
+      }
+    };
+    getConfiguration();
   }, []);
+
+  const saveConfiguration = useCallback(
+    async (service, host, port, secure, user, pass) => {
+      const configuration = await window.electron.createConfiguration(
+        service,
+        host,
+        port,
+        secure,
+        { user, pass }
+      );
+      window.electron.saveConfiguration(configuration);
+    },
+    []
+  );
 
   return (
     <Grid container direction="column" sm>
@@ -58,10 +82,42 @@ const UploadTemplates = () => {
         <Grid container alignItems="flex-end" sm>
           <Grid item sm>
             <FormControl className={classes.formControl}>
+              <InputLabel>Service</InputLabel>
+              <Input
+                fullWidth
+                onChange={(e) => {
+                  setService(e.target.value);
+                  saveConfiguration(
+                    e.target.value,
+                    host,
+                    port,
+                    secure,
+                    user,
+                    pass
+                  );
+                }}
+                value={service}
+              />
+            </FormControl>
+          </Grid>
+        </Grid>
+        <Grid container alignItems="flex-end" sm>
+          <Grid item sm>
+            <FormControl className={classes.formControl}>
               <InputLabel>Host</InputLabel>
               <Input
                 fullWidth
-                onChange={(e) => setHost(e.target.value)}
+                onChange={(e) => {
+                  setHost(e.target.value);
+                  saveConfiguration(
+                    service,
+                    e.target.value,
+                    port,
+                    secure,
+                    user,
+                    pass
+                  );
+                }}
                 value={host}
               />
             </FormControl>
@@ -74,7 +130,17 @@ const UploadTemplates = () => {
               <Input
                 fullWidth
                 type="number"
-                onChange={(e) => setPort(+e.target.value)}
+                onChange={(e) => {
+                  saveConfiguration(
+                    service,
+                    host,
+                    +e.target.value,
+                    secure,
+                    user,
+                    pass
+                  );
+                  setPort(+e.target.value);
+                }}
                 value={port}
               />
             </FormControl>
@@ -86,7 +152,17 @@ const UploadTemplates = () => {
               <InputLabel>Secure</InputLabel>
               <Switch
                 checked={secure}
-                onChange={(e) => setSecure(e.target.checked)}
+                onChange={(e) => {
+                  saveConfiguration(
+                    service,
+                    host,
+                    port,
+                    e.target.checked,
+                    user,
+                    pass
+                  );
+                  setSecure(e.target.checked);
+                }}
                 color="primary"
               />
             </FormControl>
@@ -98,7 +174,17 @@ const UploadTemplates = () => {
               <InputLabel>User</InputLabel>
               <Input
                 fullWidth
-                onChange={(e) => setUser(e.target.value)}
+                onChange={(e) => {
+                  saveConfiguration(
+                    service,
+                    host,
+                    port,
+                    secure,
+                    e.target.value,
+                    pass
+                  );
+                  setUser(e.target.value);
+                }}
                 value={user}
               />
             </FormControl>
@@ -110,7 +196,17 @@ const UploadTemplates = () => {
               <InputLabel>Password</InputLabel>
               <Input
                 fullWidth
-                onChange={(e) => setPass(e.target.value)}
+                onChange={(e) => {
+                  saveConfiguration(
+                    service,
+                    host,
+                    port,
+                    secure,
+                    user,
+                    e.target.value
+                  );
+                  setPass(e.target.value);
+                }}
                 value={pass}
                 type={showPassword ? "text" : "password"}
                 endAdornment={

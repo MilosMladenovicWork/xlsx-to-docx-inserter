@@ -12,12 +12,12 @@ const settingsPath =
 
 test("create configuration creates configuration", () => {
   expect(
-    createConfiguration("smtp.ethereal.email", 587, false, {
+    createConfiguration("ethereal", "smtp.ethereal.email", 587, false, {
       user: "user",
       pass: "pass",
     })
   ).toBe(
-    '{"host":"smtp.ethereal.email","port":587,"secure":false,"auth":{"user":"user","pass":"pass"}}'
+    '{"service":"ethereal","host":"smtp.ethereal.email","port":587,"secure":false,"auth":{"user":"user","pass":"pass"}}'
   );
 });
 
@@ -41,4 +41,3 @@ test("get configuration returns path", async () => {
   expect.assertions(1);
   await fs.rm(path.join(__dirname, "../../../settings"), { recursive: true });
 });
-

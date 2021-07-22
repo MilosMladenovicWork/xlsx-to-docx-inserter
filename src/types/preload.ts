@@ -26,6 +26,10 @@ const {
   getEmailTextTemplates,
   previewEmail,
   sendEmails,
+  createConfiguration,
+  getConfiguration,
+  saveConfiguration,
+  getConfigurationJSON
 } = require("../utils/write");
 
 export interface ElectronPreloadFunctions {
@@ -55,4 +59,8 @@ export interface ElectronPreloadFunctions {
   getEmailTextTemplates: typeof getEmailTextTemplates;
   previewEmail: typeof previewEmail;
   sendEmails: typeof sendEmails;
+  createConfiguration: typeof createConfiguration;
+  getConfiguration: typeof getConfiguration;
+  getConfigurationJSON: typeof getConfigurationJSON;
+  saveConfiguration: typeof saveConfiguration,
 }

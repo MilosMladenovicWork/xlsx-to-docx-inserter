@@ -1,10 +1,11 @@
 const { ipcRenderer } = require("electron");
 const path = require("path");
-const { writeFile } = require("./fileHandlers");
+const { writeFile, readFile } = require("./fileHandlers");
 const fs = require("fs");
 
-const createConfiguration = (host, port, secure, auth) => {
+const createConfiguration = (service, host, port, secure, auth) => {
   return JSON.stringify({
+    service,
     host,
     port,
     secure,
@@ -70,8 +71,44 @@ const getConfiguration = async () => {
   return getFilePath();
 };
 
+const getConfigurationJSON = async () => {
+  const configurationFolderPath = await getConfigurationFolderPath();
+
+  if (!fs.existsSync(configurationFolderPath)) {
+    fs.mkdirSync(configurationFolderPath, {
+      recursive: true,
+    });
+  }
+
+  const getFilePath = async () =>
+    new Promise((resolve, reject) => {
+      fs.readdir(configurationFolderPath, function (err, files) {
+        //handling error
+        if (err) {
+          reject(err);
+          console.log("Unable to scan directory: " + err);
+        }
+        const fileNames = files.map((file) => path.parse(file).name);
+
+        let fileData;
+
+        if (fileNames.findIndex((fileName) => fileName === "index") !== -1) {
+          fileData = readFile(
+            path.join(configurationFolderPath, "index.json"),
+            "utf8"
+          );
+        }
+
+        resolve(fileData);
+      });
+    });
+
+  return getFilePath();
+};
+
 module.exports = {
   createConfiguration,
   saveConfiguration,
   getConfiguration,
+  getConfigurationJSON,
 };
