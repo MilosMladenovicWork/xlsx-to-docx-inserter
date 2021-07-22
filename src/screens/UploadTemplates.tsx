@@ -31,7 +31,10 @@ const useStyles = makeStyles(
       margin: theme.spacing(5, 0, 0, 0),
     },
     listItem: { color: theme.palette.text.primary },
-    listTitle: { color: theme.palette.text.primary },
+    listTitle: {
+      color: theme.palette.text.primary,
+      marginTop: theme.spacing(2),
+    },
     buttonWrapper: {
       marginTop: theme.spacing(4),
     },
@@ -108,85 +111,66 @@ const UploadTemplates = () => {
     else return "neutral";
   };
 
+  // TODO: add animations on buttons and add titles on each section
+
   return (
-    <Grid container direction="column" sm>
-      <AnimateSharedLayout>
-        <AnimatePresence>
-          {uploadedFiles.length > 0 && (
-            <motion.div
-              initial={{
-                opacity: 0,
-                overflow: "hidden",
-              }}
-              animate={{
-                opacity: 1,
-                overflow: "hidden",
-              }}
-              exit={{
-                opacity: 0,
-                overflow: "hidden",
-              }}
-              layout
-            >
-              <Typography
-                className={classes.listTitle}
-                variant="h6"
-                gutterBottom
-              >
-                Uploaded data
-              </Typography>
-              <List className={classes.list}>
-                <AnimateSharedLayout>
-                  <AnimatePresence>
-                    {uploadedFiles.map((file) => (
-                      <motion.div
-                        key={file}
-                        initial={{
-                          maxHeight: 0,
-                          opacity: 0,
-                          overflow: "hidden",
-                        }}
-                        animate={{
-                          maxHeight: 100,
-                          opacity: 1,
-                          overflow: "hidden",
-                        }}
-                        exit={{
-                          maxHeight: 0,
-                          opacity: 0,
-                          overflow: "hidden",
-                        }}
-                        layout
-                      >
-                        <ListItem className={classes.listItem}>
-                          <ListItemAvatar>
-                            <Avatar>
-                              <Description />
-                            </Avatar>
-                          </ListItemAvatar>
-                          <ListItemText
-                            primary={file}
-                            primaryTypographyProps={{ noWrap: true }}
-                          />
-                          <ListItemSecondaryAction>
-                            <IconButton
-                              edge="end"
-                              aria-label="delete"
-                              onClick={() => onDeleteHandler(file)}
-                            >
-                              <Delete />
-                            </IconButton>
-                          </ListItemSecondaryAction>
-                        </ListItem>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </AnimateSharedLayout>
-              </List>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </AnimateSharedLayout>
+    <Grid container direction="column">
+      {uploadedFiles.length > 0 && (
+        <>
+          <Typography className={classes.listTitle} variant="h6" gutterBottom>
+            Uploaded data
+          </Typography>
+          <List className={classes.list}>
+            <AnimateSharedLayout>
+              <AnimatePresence>
+                {uploadedFiles.map((file) => (
+                  <motion.div
+                    key={file}
+                    initial={{
+                      maxHeight: 0,
+                      opacity: 0,
+                      overflow: "hidden",
+                    }}
+                    animate={{
+                      maxHeight: 100,
+                      opacity: 1,
+                      overflow: "hidden",
+                    }}
+                    exit={{
+                      maxHeight: 0,
+                      opacity: 0,
+                      overflow: "hidden",
+                    }}
+                    layout
+                  >
+                    <ListItem className={classes.listItem}>
+                      <ListItemAvatar>
+                        <Avatar>
+                          <Description />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={file}
+                        primaryTypographyProps={{ noWrap: true }}
+                      />
+                      <ListItemSecondaryAction>
+                        <IconButton
+                          edge="end"
+                          aria-label="delete"
+                          onClick={() => onDeleteHandler(file)}
+                        >
+                          <Delete />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </AnimateSharedLayout>
+          </List>
+        </>
+      )}
+
       <ValidationWrapper className={classes.buttonWrapper} isValid="success">
         <Button
           variant="contained"
@@ -199,75 +183,58 @@ const UploadTemplates = () => {
         </Button>
       </ValidationWrapper>
       <div className={classes.divider}></div>
+      <Typography className={classes.listTitle} variant="h6" gutterBottom>
+        Uploaded Text Document
+      </Typography>
       {uploadedEmailText.length > 0 && (
-        <AnimateSharedLayout>
-          <AnimatePresence>
-            <motion.div
-              initial={{
-                opacity: 0,
-                overflow: "hidden",
-              }}
-              animate={{
-                opacity: 1,
-                overflow: "hidden",
-              }}
-              exit={{
-                opacity: 0,
-                overflow: "hidden",
-              }}
-              layout
-            >
-              <List className={classes.list}>
-                <AnimateSharedLayout>
-                  <AnimatePresence>
-                    {uploadedEmailText.map((file) => (
-                      <motion.div
-                        key={file}
-                        initial={{
-                          maxHeight: 0,
-                          opacity: 0,
-                          overflow: "hidden",
-                        }}
-                        animate={{
-                          maxHeight: 100,
-                          opacity: 1,
-                          overflow: "hidden",
-                        }}
-                        exit={{
-                          maxHeight: 0,
-                          opacity: 0,
-                          overflow: "hidden",
-                        }}
-                        layout
+        <List className={classes.list}>
+          <AnimateSharedLayout>
+            <AnimatePresence>
+              {uploadedEmailText.map((file) => (
+                <motion.div
+                  key={file}
+                  initial={{
+                    maxHeight: 0,
+                    opacity: 0,
+                    overflow: "hidden",
+                  }}
+                  animate={{
+                    maxHeight: 100,
+                    opacity: 1,
+                    overflow: "hidden",
+                  }}
+                  exit={{
+                    maxHeight: 0,
+                    opacity: 0,
+                    overflow: "hidden",
+                  }}
+                  layout
+                >
+                  <ListItem className={classes.listItem}>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <Description />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={file}
+                      primaryTypographyProps={{ noWrap: true }}
+                    />
+                    <ListItemSecondaryAction>
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={() => onDeleteEmailTextHandler(file)}
                       >
-                        <ListItem className={classes.listItem}>
-                          <ListItemAvatar>
-                            <Avatar>
-                              <Description />
-                            </Avatar>
-                          </ListItemAvatar>
-                          <ListItemText
-                            primary={file}
-                            primaryTypographyProps={{ noWrap: true }}
-                          />
-                          <ListItemSecondaryAction>
-                            <IconButton
-                              edge="end"
-                              aria-label="delete"
-                              onClick={() => onDeleteEmailTextHandler(file)}
-                            >
-                              <Delete />
-                            </IconButton>
-                          </ListItemSecondaryAction>
-                        </ListItem>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-                </AnimateSharedLayout>
-              </List>
-            </motion.div>
-          </AnimatePresence>
-        </AnimateSharedLayout>
+                        <Delete />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </AnimateSharedLayout>
+        </List>
       )}
       <ValidationWrapper
         className={classes.buttonWrapper}
@@ -285,77 +252,59 @@ const UploadTemplates = () => {
       </ValidationWrapper>
       <div className={classes.divider}></div>
 
-      {setUploadedEmailHTML.length && (
-        <AnimateSharedLayout>
-          <AnimatePresence>
-            {uploadedEmailHTML.length > 0 && (
-              <motion.div
-                initial={{
-                  opacity: 0,
-                  overflow: "hidden",
-                }}
-                animate={{
-                  opacity: 1,
-                  overflow: "hidden",
-                }}
-                exit={{
-                  opacity: 0,
-                  overflow: "hidden",
-                }}
-                layout
-              >
-                <List className={classes.list}>
-                  <AnimateSharedLayout>
-                    <AnimatePresence>
-                      {uploadedEmailHTML.map((file) => (
-                        <motion.div
-                          key={file}
-                          initial={{
-                            maxHeight: 0,
-                            opacity: 0,
-                            overflow: "hidden",
-                          }}
-                          animate={{
-                            maxHeight: 100,
-                            opacity: 1,
-                            overflow: "hidden",
-                          }}
-                          exit={{
-                            maxHeight: 0,
-                            opacity: 0,
-                            overflow: "hidden",
-                          }}
-                          layout
-                        >
-                          <ListItem className={classes.listItem}>
-                            <ListItemAvatar>
-                              <Avatar>
-                                <Description />
-                              </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                              primary={file}
-                              primaryTypographyProps={{ noWrap: true }}
-                            />
-                            <ListItemSecondaryAction>
-                              <IconButton
-                                edge="end"
-                                aria-label="delete"
-                                onClick={() => onDeleteEmailHTMLHandler(file)}
-                              >
-                                <Delete />
-                              </IconButton>
-                            </ListItemSecondaryAction>
-                          </ListItem>
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </AnimateSharedLayout>
-                </List>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </AnimateSharedLayout>
+      <Typography className={classes.listTitle} variant="h6" gutterBottom>
+        Upload Email HTML
+      </Typography>
+
+      {uploadedEmailHTML.length > 0 && (
+        <List className={classes.list}>
+          <AnimateSharedLayout>
+            <AnimatePresence>
+              {uploadedEmailHTML.map((file) => (
+                <motion.div
+                  key={file}
+                  initial={{
+                    maxHeight: 0,
+                    opacity: 0,
+                    overflow: "hidden",
+                  }}
+                  animate={{
+                    maxHeight: 100,
+                    opacity: 1,
+                    overflow: "hidden",
+                  }}
+                  exit={{
+                    maxHeight: 0,
+                    opacity: 0,
+                    overflow: "hidden",
+                  }}
+                  layout
+                >
+                  <ListItem className={classes.listItem}>
+                    <ListItemAvatar>
+                      <Avatar>
+                        <Description />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={file}
+                      primaryTypographyProps={{ noWrap: true }}
+                    />
+                    <ListItemSecondaryAction>
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={() => onDeleteEmailHTMLHandler(file)}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </AnimateSharedLayout>
+        </List>
       )}
       <ValidationWrapper
         className={classes.buttonWrapper}

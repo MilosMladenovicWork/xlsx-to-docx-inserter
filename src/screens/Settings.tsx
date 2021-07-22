@@ -7,6 +7,7 @@ import {
   InputAdornment,
   InputLabel,
   IconButton,
+  Typography,
 } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { useEffect, useState } from "react";
@@ -18,6 +19,23 @@ const useStyles = makeStyles(
     formControl: {
       minWidth: "100%",
       paddingRight: theme.spacing(2),
+      marginBottom: theme.spacing(4),
+    },
+    switchControl: {
+      marginBottom: theme.spacing(4),
+    },
+    switchLabel: {
+      color: "rgba(255, 255, 255, 0.7)",
+    },
+    numberInput: {
+      '& input': {
+        '&::-webkit-outer-spin-button': {
+          '-webkit-appearance': 'none',
+        },
+        '&::-webkit-inner-spin-button': {
+          '-webkit-appearance': 'none',
+        },
+      },
     },
     button: {
       minWidth: 160,
@@ -53,9 +71,9 @@ const UploadTemplates = () => {
   }, []);
 
   return (
-    <Grid container direction="column" sm>
+    <Grid container direction="column">
       <Section isOpen title="Global Configurations" hasDivider={false}>
-        <Grid container alignItems="flex-end" sm>
+        <Grid container alignItems="flex-end" item sm>
           <Grid item sm>
             <FormControl className={classes.formControl}>
               <InputLabel>Host</InputLabel>
@@ -72,6 +90,7 @@ const UploadTemplates = () => {
             <FormControl className={classes.formControl}>
               <InputLabel>Port</InputLabel>
               <Input
+                className={classes.numberInput}
                 fullWidth
                 type="number"
                 onChange={(e) => setPort(+e.target.value)}
@@ -82,8 +101,10 @@ const UploadTemplates = () => {
         </Grid>
         <Grid container alignItems="flex-end" sm>
           <Grid item sm>
-            <FormControl className={classes.formControl}>
-              <InputLabel>Secure</InputLabel>
+            <FormControl className={classes.switchControl}>
+              <Typography variant="caption" className={classes.switchLabel}>
+                Secure
+              </Typography>
               <Switch
                 checked={secure}
                 onChange={(e) => setSecure(e.target.checked)}

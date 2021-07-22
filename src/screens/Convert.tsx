@@ -66,6 +66,7 @@ export const useEmailHTMLTemplates = (): [
 // TODO: check if functions can be moved better
 // TODO: check if some states can be moved in components
 // TODO: TODO: avilable placeholders stays on page when you remove file
+// TODO: remove logger when user delete regex
 
 const Convert = () => {
   const [uploadedFiles, setUploadedFiles] = useState<[] | string[]>([]);
@@ -245,6 +246,7 @@ const Convert = () => {
 
   return (
     <>
+      {/* TODO: update this */}
       <Grid container direction="column" style={{width: "calc(100% - 272px)"}}>
         <UploadXSLX
           title="Upload data"
