@@ -7,13 +7,18 @@ import {
 } from "@material-ui/core";
 
 import Section from "../screens/components/Section";
+import ValidationWrapper from "../screens/components/ValidationWrapper";
+import { StatusType } from '../screens/Convert';
 
 export interface ChooseTemplateProps {
-  handleSelectedTemplate: (event: React.ChangeEvent<{
-    name?: string | undefined;
-    value: unknown;
-}>) => void;
-  selectedTemplate: unknown;
+  selectedTemplateStatuses: StatusType[];
+  handleSelectedTemplate: (
+    event: React.ChangeEvent<{
+      name?: string | undefined;
+      value: unknown;
+    }>
+  ) => void;
+  selectedTemplate: string;
   uploadedTemplates: string[];
   isOpen: boolean;
   title: string;
@@ -30,6 +35,7 @@ const useStyles = makeStyles(
 );
 
 const ChooseTemplate = ({
+  selectedTemplateStatuses,
   handleSelectedTemplate,
   selectedTemplate,
   uploadedTemplates,
@@ -37,22 +43,28 @@ const ChooseTemplate = ({
   isOpen,
 }: ChooseTemplateProps) => {
   const classes = useStyles();
+
+  const choseTemplateValid = () => {
+    if (selectedTemplate) {
+      return "success";
+    } else return "neutral";
+  };
+
   return (
     <Section isOpen={isOpen} title={title}>
-    <FormControl className={classes.formControl}>
-      <InputLabel>Template</InputLabel>
-      <Select
-        onChange={handleSelectedTemplate}
-        value={selectedTemplate}
-      >
-        {uploadedTemplates.map((template) => (
-          <MenuItem value={template} key={template}>
-            {template}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-  </Section>
+      <ValidationWrapper isValid={choseTemplateValid()}>
+        <FormControl className={classes.formControl}>
+          <InputLabel>Template</InputLabel>
+          <Select onChange={handleSelectedTemplate} value={selectedTemplate}>
+            {uploadedTemplates.map((template) => (
+              <MenuItem value={template} key={template}>
+                {template}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </ValidationWrapper>
+    </Section>
   );
 };
 

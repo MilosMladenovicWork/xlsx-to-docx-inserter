@@ -1,12 +1,12 @@
 import { Grid, Typography, makeStyles } from "@material-ui/core";
 import { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
 export interface SectionProps {
   children: ReactNode;
   title?: string;
   isOpen: boolean;
   hasDivider?: boolean;
+  className?: string;
 }
 
 const useStyles = makeStyles(
@@ -19,6 +19,7 @@ const useStyles = makeStyles(
       margin: theme.spacing(5, 0, 0, 0),
     },
     listTitle: { color: theme.palette.text.primary },
+
   }),
   { name: "Section" }
 );

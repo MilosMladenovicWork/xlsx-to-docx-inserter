@@ -11,7 +11,9 @@ import {
 } from "@material-ui/core";
 
 import { Publish } from "@material-ui/icons";
+import ValidationWrapper from "../screens/components/ValidationWrapper";
 import Section from "../screens/components/Section";
+import { StatusType } from '../screens/Convert';
 
 export interface CheckDataProps {
   cellRegexes: { id?: string; regex?: string; colNum: number | undefined }[];
@@ -24,11 +26,16 @@ export interface CheckDataProps {
   xlsxColumnNames: { name: string; colNum: number }[];
   checkingXLSXColumns: boolean;
   handleCheckXLSXColumns: () => Promise<void>;
-  setCellRegexes: React.Dispatch<React.SetStateAction<{
-    id?: string | undefined;
-    regex?: string | undefined;
-    colNum: number | undefined;
-}[]>>
+  setCellRegexes: React.Dispatch<
+    React.SetStateAction<
+      {
+        id?: string | undefined;
+        regex?: string | undefined;
+        colNum: number | undefined;
+      }[]
+    >
+  >;
+  checkXLSXColumnsStatuses: StatusType[];
   isOpen: boolean;
 }
 
@@ -40,13 +47,14 @@ const useStyles = makeStyles(
     select: {
       // height: '60px',
       paddingLeft: 10,
-    }
+    },
   }),
   { name: "Convert" }
 );
 
 const CheckData = ({
   cellRegexes,
+  checkXLSXColumnsStatuses,
   handleColumnSelection,
   xlsxColumnNames,
   checkingXLSXColumns,
@@ -57,41 +65,49 @@ const CheckData = ({
   const classes = useStyles();
 
   const handleRegexInput: React.ChangeEventHandler<
-  HTMLInputElement | HTMLTextAreaElement
-> = (e) => {
-  const targetName = e.target.name as string;
-  const targetValue = e.target.value;
-  const stateIndex = cellRegexes.findIndex((item) => item.id === targetName);
-  if (stateIndex !== -1) {
-    setCellRegexes((prevState) => {
-      const newState = [...prevState];
-      newState[stateIndex].regex = targetValue;
-      return newState;
-    });
-    if (e.target.value === "" && cellRegexes.length > 1) {
+    HTMLInputElement | HTMLTextAreaElement
+  > = (e) => {
+    const targetName = e.target.name as string;
+    const targetValue = e.target.value;
+    const stateIndex = cellRegexes.findIndex((item) => item.id === targetName);
+    if (stateIndex !== -1) {
       setCellRegexes((prevState) => {
         const newState = [...prevState];
-        return newState.filter((item) => item.id !== targetName);
+        newState[stateIndex].regex = targetValue;
+        return newState;
       });
-    }
-    if (cellRegexes.every((item) => item.regex)) {
+      if (e.target.value === "" && cellRegexes.length > 1) {
+        setCellRegexes((prevState) => {
+          const newState = [...prevState];
+          return newState.filter((item) => item.id !== targetName);
+        });
+      }
+      if (cellRegexes.every((item) => item.regex)) {
+        setCellRegexes((prevState) => {
+          const newState = [...prevState];
+          newState.push({ id: undefined, colNum: undefined, regex: undefined });
+          return newState;
+        });
+      }
+    } else {
       setCellRegexes((prevState) => {
         const newState = [...prevState];
-        newState.push({ id: undefined, colNum: undefined, regex: undefined });
+        const stateIndex = cellRegexes.findIndex(
+          (item) => item.id === undefined
+        );
+        newState[stateIndex].id = targetName;
         return newState;
       });
     }
-  } else {
-    setCellRegexes((prevState) => {
-      const newState = [...prevState];
-      const stateIndex = cellRegexes.findIndex(
-        (item) => item.id === undefined
-      );
-      newState[stateIndex].id = targetName;
-      return newState;
-    });
+  };
+
+  const checkDataValid = () => {
+    const statuseValidArray = checkXLSXColumnsStatuses.map(status => status.valid);
+    const hasFalseStatus = statuseValidArray.some(item => item === false);
+
+    if (hasFalseStatus) return 'error';
+    return 'success';
   }
-};
 
   return (
     <Section isOpen={isOpen}>
@@ -135,16 +151,18 @@ const CheckData = ({
         })}
         <Grid item>
           {/* TODO: add logic to this button */}
-          <Button
-            variant="contained"
-            color="secondary"
-            component="label"
-            startIcon={<Publish />}
-            disabled={checkingXLSXColumns}
-            onClick={handleCheckXLSXColumns}
-          >
-            Check columns
-          </Button>
+          <ValidationWrapper isValid={checkDataValid()}>
+            <Button
+              variant="contained"
+              color="secondary"
+              component="label"
+              startIcon={<Publish />}
+              disabled={checkingXLSXColumns}
+              onClick={handleCheckXLSXColumns}
+            >
+              Check columns
+            </Button>
+          </ValidationWrapper>
         </Grid>
       </Grid>
     </Section>
