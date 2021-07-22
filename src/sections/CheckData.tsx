@@ -100,16 +100,6 @@ const CheckData = ({
     }
   };
 
-//   Milos Mladenovic
-// 17:30
-//  host: "smtp.ethereal.email",
-//     port: 587, type number
-//     secure: false, // true for 465, false for other ports
-//     auth: {
-//       user: testAccount.user, // generated ethereal user
-//       pass: testAccount.pass, // generated ethereal password
-//     },
-
   const checkDataValid = () => {
     const statuseValidArray = checkXLSXColumnsStatuses.map(status => status.valid);
     const hasFalseStatus = statuseValidArray.some(item => item === false);

@@ -245,7 +245,7 @@ const Convert = () => {
 
   return (
     <>
-      <Grid container direction="column" sm>
+      <Grid container direction="column" style={{width: "calc(100% - 272px)"}}>
         <UploadXSLX
           title="Upload data"
           uploadedFiles={uploadedFiles}
