@@ -1,5 +1,11 @@
 {
   "name": "xlsx-to-docx-inserter",
+  "jest": {
+    "moduleNameMapper": {
+      "electron": "<rootDir>/src/mocks/electron.js",
+      "preview-email": "<rootDir>/src/mocks/preview-email.js"
+    }
+  },
   "version": "0.1.0",
   "private": true,
   "main": "electron-start.ts",

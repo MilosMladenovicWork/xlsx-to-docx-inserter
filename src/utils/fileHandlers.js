@@ -348,6 +348,7 @@ const openFile = async (item) => {
 
 module.exports = {
   writeFiles,
+  writeFile,
   saveFiles,
   savePDFFiles,
   getFileNameFromPath,
@@ -356,5 +357,5 @@ module.exports = {
   savePreviewPDF,
   savePreviewDOCX,
   getFirstValidRow,
-  getFirstValidColumn
+  getFirstValidColumn,
 };
