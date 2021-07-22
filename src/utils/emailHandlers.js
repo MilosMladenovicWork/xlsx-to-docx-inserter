@@ -11,6 +11,7 @@ const {
 } = require("./fileHandlers");
 const Excel = require("exceljs");
 const RegexParser = require("regex-parser");
+const { getConfigurationJSON } = require("./configurationHandlers");
 
 const previewEmail = async (
   emailFrom,
@@ -219,7 +220,31 @@ const sendEmails = async (
 
         previewEmailPackage(message);
 
-        
+        const configurationJSON = await getConfigurationJSON();
+
+        if (configurationJSON !== undefined) {
+          const {
+            service,
+            host,
+            port,
+            secure,
+            auth: { user, pass },
+          } = JSON.parse(configurationJSON);
+          console.log(JSON.parse(configurationJSON))
+          let transporter = nodemailer.createTransport({
+            service,
+            host,
+            port: port === 0 ? undefined : port,
+            secure, // true for 465, false for other ports
+            auth: {
+              user, // generated ethereal user
+              pass, // generated ethereal password
+            },
+          });
+
+          // send mail with defined transport object
+          const mail = await transporter.sendMail(message);
+        }
       });
     }
   });
