@@ -245,7 +245,7 @@ const Convert = () => {
 
   return (
     <>
-      <Grid container direction="column" sm>
+      <Grid container direction="column" style={{width: "calc(100% - 272px)"}}>
         <UploadXSLX
           title="Upload data"
           uploadedFiles={uploadedFiles}
@@ -272,7 +272,6 @@ const Convert = () => {
           handleSelectedTemplate={handleSelectedTemplate}
           selectedTemplate={selectedTemplate}
           uploadedTemplates={uploadedTemplates}
-          selectedTemplateStatuses={selectedTemplateStatuses}
           isOpen={!!uploadedTemplates.length && uploadedFiles.length > 0}
         />
         <AvailablePlaceholders

@@ -45,7 +45,6 @@ const useStyles = makeStyles(
       minWidth: 160,
     },
     select: {
-      // height: '60px',
       paddingLeft: 10,
     },
   }),
@@ -106,7 +105,8 @@ const CheckData = ({
     const hasFalseStatus = statuseValidArray.some(item => item === false);
 
     if (hasFalseStatus) return 'error';
-    return 'success';
+    else if (!hasFalseStatus) return 'success';
+    else return 'neutral';
   }
 
   return (

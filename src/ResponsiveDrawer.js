@@ -72,8 +72,8 @@ const useStyles = makeStyles((theme) => ({
     height: `calc(100vh - ${theme.mixins.toolbar.minHeight + 10}px)`,
     overflowY: "auto",
     [theme.breakpoints.up("sm")]: {
-      width: "calc(100% - 513px)", // substract scrollbar
-      // width: 'auto',
+      // width: "calc(100% - 513px)", // substract scrollbar
+      width: '100%',
       padding: theme.spacing(4, 5),
     },
     "&::-webkit-scrollbar": {
@@ -195,6 +195,7 @@ function ResponsiveDrawer(props) {
           </Drawer>
         </Hidden>
       </nav>
+      {/* TODO: find solution for when right side bar is not available */}
       <Grid container className={classes.content}>
         {children}
       </Grid>
