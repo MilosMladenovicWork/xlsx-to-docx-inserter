@@ -23,6 +23,13 @@ const {
   getXLSXColumnNames,
 } = require("./src/utils/xlsxHandlers");
 
+const {
+  createConfiguration,
+  getConfiguration,
+  saveConfiguration,
+  getConfigurationJSON,
+} = require("./src/utils/configurationHandlers");
+
 const { getUploadedTemplates } = require("./src/utils/getTemplate");
 
 const {
@@ -61,5 +68,9 @@ contextBridge.exposeInMainWorld("electron", {
   getEmailHTMLTemplates,
   getEmailTextTemplates,
   sendEmails,
+  createConfiguration,
+  getConfiguration,
+  saveConfiguration,
+  getConfigurationJSON,
   ipcRenderer,
 });
