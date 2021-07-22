@@ -368,7 +368,33 @@ const Convert = () => {
                   )
                 }
               >
-                Preview emails
+                Preview email
+              </Button>
+            </>
+          )}
+        {xlsxColumnNames &&
+          savedPDFFiles &&
+          savedPDFFiles.length > 0 &&
+          emailFrom &&
+          emailTo &&
+          emailSubject &&
+          selectedEmailTextTemplate &&
+          selectedEmailTextTemplate && (
+            <>
+              <Button
+                variant="contained"
+                onClick={async () =>
+                  await window.electron.sendEmails(
+                    emailFrom,
+                    emailTo,
+                    emailSubject,
+                    selectedEmailTextTemplate,
+                    selectedEmailHTMLTemplate,
+                    uploadedFiles[0]
+                  )
+                }
+              >
+                Send emails
               </Button>
             </>
           )}

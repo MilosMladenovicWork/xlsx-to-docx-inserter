@@ -20,6 +20,108 @@ const previewEmail = async (
   selectedEmailHTMLTemplate,
   xlsxFile
 ) => {
+  try {
+    const directoryPath = await ipcRenderer.invoke("getAppDataDirectory");
+    const emailTextFolderName = "emailTextTemplates";
+
+    const emailTextTemplatesFolder = path.join(
+      directoryPath,
+      emailTextFolderName
+    );
+
+    const text = await readFile(
+      path.join(emailTextTemplatesFolder, selectedEmailTextTemplate + ".txt"),
+      "utf8"
+    );
+
+    const emailHTMLFolderName = "emailHTMLTemplates";
+
+    const emailHTMLTemplatesFolder = path.join(
+      directoryPath,
+      emailHTMLFolderName
+    );
+
+    const html = await readFile(
+      path.join(emailHTMLTemplatesFolder, selectedEmailHTMLTemplate + ".html"),
+      "utf8"
+    );
+
+    const workbook = new Excel.Workbook();
+    await workbook.xlsx.readFile(xlsxFile);
+    const worksheet = workbook.getWorksheet();
+    let firstValidColumn = await getFirstValidColumn(xlsxFile);
+    let firstValidRow = await getFirstValidRow(xlsxFile);
+
+    const columnNames = worksheet.getRow(firstValidRow).values;
+    const firstRowWithData = worksheet.getRow(firstValidRow + 1).values;
+
+    const emailText = await replaceEmailTemplatePlaceholders(
+      text,
+      firstRowWithData,
+      firstValidColumn,
+      columnNames
+    );
+    const htmlText = await replaceEmailTemplatePlaceholders(
+      html,
+      firstRowWithData,
+      firstValidColumn,
+      columnNames
+    );
+    const emailFromProcessed = await replaceEmailTemplatePlaceholders(
+      emailFrom,
+      firstRowWithData,
+      firstValidColumn,
+      columnNames
+    );
+    const emailToProcessed = await replaceEmailTemplatePlaceholders(
+      emailTo,
+      firstRowWithData,
+      firstValidColumn,
+      columnNames
+    );
+    const emailSubjectProcessed = await replaceEmailTemplatePlaceholders(
+      emailSubject,
+      firstRowWithData,
+      firstValidColumn,
+      columnNames
+    );
+
+    const message = {
+      from: emailFromProcessed, // sender address
+      to: emailToProcessed, // list of receivers
+      subject: emailSubjectProcessed, // Subject line
+      text: emailText, // plain text body
+      html: htmlText, // html body
+    };
+
+    previewEmailPackage(message);
+
+    return message;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const sendEmails = async (
+  emailFrom,
+  emailTo,
+  emailSubject,
+  selectedEmailTextTemplate,
+  selectedEmailHTMLTemplate,
+  xlsxFile
+) => {
+  const workbook = new Excel.Workbook();
+  await workbook.xlsx.readFile(xlsxFile);
+  const worksheet = workbook.getWorksheet();
+
+  let firstValidColumn;
+  let firstValidRow;
+  let columnNames;
+
+  const filesToWrite = [];
+
+  let replaceData = {};
+
   const directoryPath = await ipcRenderer.invoke("getAppDataDirectory");
   const emailTextFolderName = "emailTextTemplates";
 
@@ -45,55 +147,82 @@ const previewEmail = async (
     "utf8"
   );
 
-  const workbook = new Excel.Workbook();
-  await workbook.xlsx.readFile(xlsxFile);
-  const worksheet = workbook.getWorksheet();
-  let firstValidColumn = await getFirstValidColumn(xlsxFile);
-  let firstValidRow = await getFirstValidRow(xlsxFile);
+  worksheet.eachRow(function (row, rowNumber) {
+    const rowValues = row.values;
 
-  const columnNames = worksheet.getRow(firstValidRow).values;
-  const firstRowWithData = worksheet.getRow(firstValidRow + 1).values;
+    if (firstValidColumn === undefined) {
+      const indexOfValidColumn = rowValues.findIndex((value) => value != null);
+      if (indexOfValidColumn !== -1) {
+        firstValidColumn = indexOfValidColumn;
+      }
+    }
+    if (firstValidRow === undefined) {
+      if (rowValues.some((value) => value != null)) {
+        firstValidRow = rowNumber;
+      }
+    }
+    if (firstValidRow === rowNumber) {
+      columnNames = rowValues;
+      const nonNullCells = rowValues.filter((cell) => cell != null);
+      nonNullCells.forEach((cell) => (replaceData[cell] = undefined));
+    }
 
-  const emailText = await replaceEmailTemplatePlaceholders(
-    text,
-    firstRowWithData,
-    firstValidColumn,
-    columnNames
-  );
-  const htmlText = await replaceEmailTemplatePlaceholders(
-    html,
-    firstRowWithData,
-    firstValidColumn,
-    columnNames
-  );
-  const emailFromProcessed = await replaceEmailTemplatePlaceholders(
-    emailFrom,
-    firstRowWithData,
-    firstValidColumn,
-    columnNames
-  );
-  const emailToProcessed = await replaceEmailTemplatePlaceholders(
-    emailTo,
-    firstRowWithData,
-    firstValidColumn,
-    columnNames
-  );
-  const emailSubjectProcessed = await replaceEmailTemplatePlaceholders(
-    emailSubject,
-    firstRowWithData,
-    firstValidColumn,
-    columnNames
-  );
+    if (firstValidRow < rowNumber && rowValues[firstValidColumn]) {
+      rowValues.forEach((cell, index) => {
+        const columnValue = columnNames[index];
+        if (index >= firstValidColumn && columnValue !== undefined) {
+          replaceData[columnValue] = cell;
+        }
+      });
 
-  const message = {
-    from: emailFromProcessed, // sender address
-    to: emailToProcessed, // list of receivers
-    subject: emailSubjectProcessed, // Subject line
-    text: emailText, // plain text body
-    html: htmlText, // html body
-  };
+      new Promise((resolve) => {
+        resolve();
+      }).then(async () => {
+        const emailText = await replaceEmailTemplatePlaceholders(
+          text,
+          rowValues,
+          firstValidColumn,
+          columnNames
+        );
+        const htmlText = await replaceEmailTemplatePlaceholders(
+          html,
+          rowValues,
+          firstValidColumn,
+          columnNames
+        );
+        const emailFromProcessed = await replaceEmailTemplatePlaceholders(
+          emailFrom,
+          rowValues,
+          firstValidColumn,
+          columnNames
+        );
+        const emailToProcessed = await replaceEmailTemplatePlaceholders(
+          emailTo,
+          rowValues,
+          firstValidColumn,
+          columnNames
+        );
+        const emailSubjectProcessed = await replaceEmailTemplatePlaceholders(
+          emailSubject,
+          rowValues,
+          firstValidColumn,
+          columnNames
+        );
 
-  previewEmailPackage(message);
+        const message = {
+          from: emailFromProcessed, // sender address
+          to: emailToProcessed, // list of receivers
+          subject: emailSubjectProcessed, // Subject line
+          text: emailText, // plain text body
+          html: htmlText, // html body
+        };
+
+        previewEmailPackage(message);
+
+        
+      });
+    }
+  });
 };
 
 const replaceEmailTemplatePlaceholders = (
@@ -288,4 +417,5 @@ module.exports = {
   deleteEmailHTML,
   getEmailHTMLTemplates,
   getEmailTextTemplates,
+  sendEmails,
 };

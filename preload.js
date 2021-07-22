@@ -33,6 +33,7 @@ const {
   deleteEmailHTML,
   getEmailHTMLTemplates,
   getEmailTextTemplates,
+  sendEmails,
 } = require("./src/utils/emailHandlers");
 
 contextBridge.exposeInMainWorld("electron", {
@@ -59,5 +60,6 @@ contextBridge.exposeInMainWorld("electron", {
   deleteEmailHTML,
   getEmailHTMLTemplates,
   getEmailTextTemplates,
+  sendEmails,
   ipcRenderer,
 });
