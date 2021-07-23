@@ -70,6 +70,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   drawerPaper: {
+    overflow: 'hidden',
     [theme.breakpoints.up("sm")]: {
       width: 60,
     },
