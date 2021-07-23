@@ -15,6 +15,7 @@ import {
 import { Alert, Color } from "@material-ui/lab";
 import { useEffect, useState } from "react";
 import { useUploadedTemplates } from "./UploadTemplates";
+import clsx from 'clsx';
 
 import UploadXSLX from "../sections/UploadXSLX";
 import CheckData from "../sections/CheckData";
@@ -80,6 +81,9 @@ const useStyles = makeStyles(
       marginTop: -12,
       marginLeft: -12,
     },
+    content: {
+      width: "calc(100% - 272px)",
+    }
   }),
   { name: "Convert" }
 );
@@ -91,7 +95,6 @@ const useStyles = makeStyles(
 
 const Convert = () => {
   const classes = useStyles();
-
   const [uploadedFiles, setUploadedFiles] = useState<[] | string[]>([]);
   const [XLSXUploadStatuses, setXLSXUploadStatuses] = useState<StatusType[]>(
     []
@@ -273,12 +276,8 @@ const Convert = () => {
 
   return (
     <>
-      {/* TODO: update this */}
-      <Grid
-        container
-        direction="column"
-        style={{ width: "calc(100% - 272px)" }}
-      >
+      <Grid container direction="column"
+        className={clsx({[classes.content]: uploadedFiles.length > 0 })}>
         <UploadXSLX
           title="Upload data"
           uploadedFiles={uploadedFiles}
