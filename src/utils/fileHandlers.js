@@ -195,7 +195,7 @@ const convertDOCXToPDF = async (filePaths, folder) => {
     }
   }
 
-  return promises;
+  return Promise.all(promises);
 };
 
 const savePDFFiles = async (filePaths) => {

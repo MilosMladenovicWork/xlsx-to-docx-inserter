@@ -109,7 +109,8 @@ const sendEmails = async (
   emailSubject,
   selectedEmailTextTemplate,
   selectedEmailHTMLTemplate,
-  xlsxFile
+  xlsxFile,
+  pdfPaths
 ) => {
   const workbook = new Excel.Workbook();
   await workbook.xlsx.readFile(xlsxFile);
@@ -118,8 +119,6 @@ const sendEmails = async (
   let firstValidColumn;
   let firstValidRow;
   let columnNames;
-
-  const filesToWrite = [];
 
   let replaceData = {};
 
@@ -148,8 +147,12 @@ const sendEmails = async (
     "utf8"
   );
 
+  const emailStatuses = [];
+
   worksheet.eachRow(function (row, rowNumber) {
     const rowValues = row.values;
+
+    let pdfPath;
 
     if (firstValidColumn === undefined) {
       const indexOfValidColumn = rowValues.findIndex((value) => value != null);
@@ -176,9 +179,11 @@ const sendEmails = async (
         }
       });
 
-      new Promise((resolve) => {
-        resolve();
-      }).then(async () => {
+      pdfPath = pdfPaths.find((path) =>
+        path.includes(rowValues[firstValidColumn])
+      );
+
+      const sendMail = async () => {
         const emailText = await replaceEmailTemplatePlaceholders(
           text,
           rowValues,
@@ -216,6 +221,13 @@ const sendEmails = async (
           subject: emailSubjectProcessed, // Subject line
           text: emailText, // plain text body
           html: htmlText, // html body
+          attachments: [
+            {
+              filename: path.basename(pdfPath),
+              path: pdfPath,
+              contentType: "application/pdf",
+            },
+          ],
         };
 
         previewEmailPackage(message);
@@ -230,7 +242,7 @@ const sendEmails = async (
             secure,
             auth: { user, pass },
           } = JSON.parse(configurationJSON);
-          console.log(JSON.parse(configurationJSON))
+          console.log(JSON.parse(configurationJSON));
           let transporter = nodemailer.createTransport({
             service,
             host,
@@ -243,11 +255,18 @@ const sendEmails = async (
           });
 
           // send mail with defined transport object
-          const mail = await transporter.sendMail(message);
+          return transporter.sendMail(message);
         }
-      });
+      };
+
+      emailStatuses.push(sendMail());
     }
   });
+  try {
+    return Promise.all(emailStatuses);
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 const replaceEmailTemplatePlaceholders = (

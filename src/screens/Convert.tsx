@@ -247,7 +247,11 @@ const Convert = () => {
   return (
     <>
       {/* TODO: update this */}
-      <Grid container direction="column" style={{width: "calc(100% - 272px)"}}>
+      <Grid
+        container
+        direction="column"
+        style={{ width: "calc(100% - 272px)" }}
+      >
         <UploadXSLX
           title="Upload data"
           uploadedFiles={uploadedFiles}
@@ -387,16 +391,19 @@ const Convert = () => {
             <>
               <Button
                 variant="contained"
-                onClick={async () =>
-                  await window.electron.sendEmails(
-                    emailFrom,
-                    emailTo,
-                    emailSubject,
-                    selectedEmailTextTemplate,
-                    selectedEmailHTMLTemplate,
-                    uploadedFiles[0]
-                  )
-                }
+                onClick={async () => {
+                  const receivedEmailStatuses =
+                    await window.electron.sendEmails(
+                      emailFrom,
+                      emailTo,
+                      emailSubject,
+                      selectedEmailTextTemplate,
+                      selectedEmailHTMLTemplate,
+                      uploadedFiles[0],
+                      savedPDFFiles
+                    );
+                  console.log(receivedEmailStatuses);
+                }}
               >
                 Send emails
               </Button>
