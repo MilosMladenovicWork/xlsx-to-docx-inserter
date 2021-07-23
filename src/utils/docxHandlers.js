@@ -98,26 +98,26 @@ const checkDOCXPlaceholders = (placeholders, columnNames) => {
 
   columnsExistingOverPlaceholders.forEach((columnName) =>
     statuses.push({
-      label: "Placeholder missing",
-      valid: false,
+      label: "Placeholder missing in DOCX",
+      valid: "warning",
       message: `Column ${columnName} in XLSX file doesn't have its pair in template you choose. Please remove column from XLSX file or insert placeholder with name ${columnName} between {} in DOCX template.`,
     })
   );
 
   placeholdersExistingOverColumns.forEach((placeholder) => {
     statuses.push({
-      label: "Placeholder missing",
+      label: "Column missing in XLSX",
       valid: false,
       message: `Placeholder ${placeholder} in DOCX template file doesn't have its pair in XLSX file you uploaded. Please add column in XLSX file with name ${placeholder} or remove placeholders that are between {} in DOCX template.`,
-    })
-  })
+    });
+  });
 
-  if(statuses.length === 0){
+  if (statuses.length === 0) {
     statuses.push({
       label: "DOCX and XLSX match",
       valid: true,
       message: `Column names in XLSX file completely match placeholders in DOCX file! You can proceed.`,
-    })
+    });
   }
 
   return statuses;

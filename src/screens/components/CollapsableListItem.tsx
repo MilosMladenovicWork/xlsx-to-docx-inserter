@@ -20,8 +20,8 @@ const useStyles = makeStyles(
       width: "100%",
     },
     gridContainer: {
-      flexWrap: 'nowrap',
-    }
+      flexWrap: "nowrap",
+    },
   }),
   { name: "ColapsableListItem" }
 );
@@ -44,10 +44,14 @@ const CollapsableListItem = ({
       <Alert
         className={clsx(classes.root, { [classes.active]: open })}
         classes={{ message: classes.message }}
-        severity={valid ? "success" : "error"}
+        severity={valid === "warning" ? "warning" : valid ? "success" : "error"}
       >
         <AlertTitle>
-          <Grid className={classes.gridContainer} container justify="space-between">
+          <Grid
+            className={classes.gridContainer}
+            container
+            justify="space-between"
+          >
             <Grid item>{label}</Grid>
             <Grid item>
               {message && (open ? <ExpandLess /> : <ExpandMore />)}

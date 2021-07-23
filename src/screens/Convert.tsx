@@ -28,7 +28,7 @@ import { Email, Visibility } from "@material-ui/icons";
 
 export interface StatusType {
   label: string;
-  valid: boolean;
+  valid: boolean | "warning";
   message?: string;
 }
 

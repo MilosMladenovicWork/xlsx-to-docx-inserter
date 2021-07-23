@@ -8,7 +8,6 @@ import {
 
 import Section from "../screens/components/Section";
 import ValidationWrapper from "../screens/components/ValidationWrapper";
-import { StatusType } from '../screens/Convert';
 
 export interface ChooseTemplateProps {
   handleSelectedTemplate: (
