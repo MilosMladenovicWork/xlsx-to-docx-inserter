@@ -149,6 +149,7 @@ const UploadXSLX = ({
                 color="secondary"
                 component="label"
                 startIcon={<Publish />}
+                disabled={uploadedFiles.length > 0}
               >
                 Upload XLSX File
               </Button>
