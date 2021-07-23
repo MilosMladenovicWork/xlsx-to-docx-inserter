@@ -303,6 +303,7 @@ const Convert = () => {
         />
         <ChooseTemplate
           title="Choose template"
+          selectedTemplateStatuses={selectedTemplateStatuses}
           handleSelectedTemplate={handleSelectedTemplate}
           selectedTemplate={selectedTemplate}
           uploadedTemplates={uploadedTemplates}

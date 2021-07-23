@@ -8,6 +8,7 @@ import {
 
 import Section from "../screens/components/Section";
 import ValidationWrapper from "../screens/components/ValidationWrapper";
+import { StatusType } from "../screens/Convert";
 
 export interface ChooseTemplateProps {
   handleSelectedTemplate: (
@@ -20,6 +21,7 @@ export interface ChooseTemplateProps {
   uploadedTemplates: string[];
   isOpen: boolean;
   title: string;
+  selectedTemplateStatuses: StatusType[];
 }
 
 const useStyles = makeStyles(
@@ -36,14 +38,23 @@ const ChooseTemplate = ({
   handleSelectedTemplate,
   selectedTemplate,
   uploadedTemplates,
+  selectedTemplateStatuses,
   title,
   isOpen,
 }: ChooseTemplateProps) => {
   const classes = useStyles();
 
   const choseTemplateValid = () => {
-    if (selectedTemplate) {
-      return "success";
+    if (selectedTemplateStatuses && selectedTemplateStatuses.length > 0) {
+      if (selectedTemplateStatuses[0].valid === "warning") {
+        return "warning";
+      }
+      if (selectedTemplateStatuses[0].valid === true) {
+        return "success";
+      }
+      if (selectedTemplateStatuses[0].valid === false) {
+        return "error";
+      }
     } else return "neutral";
   };
 
