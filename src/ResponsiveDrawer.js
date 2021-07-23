@@ -21,22 +21,28 @@ import PropTypes from "prop-types";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { Link } from "react-router-dom";
 
-const drawerWidth = 240;
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
   },
   drawer: {
     [theme.breakpoints.up("sm")]: {
-      width: drawerWidth,
+      width: 60,
+      flexShrink: 0,
+    },
+    [theme.breakpoints.up("md")]: {
+      width: 240,
       flexShrink: 0,
     },
   },
   appBar: {
     [theme.breakpoints.up("sm")]: {
-      width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: drawerWidth,
+      width: `calc(100% - ${60}px)`,
+      marginLeft: 60,
+    },
+    [theme.breakpoints.up("md")]: {
+      width: `calc(100% - ${240}px)`,
+      marginLeft: 240,
     },
   },
   menuButton: {
@@ -64,7 +70,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   drawerPaper: {
-    width: drawerWidth,
+    [theme.breakpoints.up("sm")]: {
+      width: 60,
+    },
+    [theme.breakpoints.up("md")]: {
+      width: 240,
+    },
   },
   content: {
     marginTop: theme.mixins.toolbar.minHeight + 10,
@@ -73,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
     overflowY: "auto",
     [theme.breakpoints.up("sm")]: {
       // width: "calc(100% - 513px)", // substract scrollbar
-      width: '100%',
+      width: "100%",
       padding: theme.spacing(4, 5),
     },
     "&::-webkit-scrollbar": {

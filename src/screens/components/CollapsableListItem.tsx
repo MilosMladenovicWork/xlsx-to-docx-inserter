@@ -8,13 +8,19 @@ import clsx from "clsx";
 type CollapsableListItemProps = StatusType;
 
 const useStyles = makeStyles(
-  () => ({
+  (theme) => ({
     root: {
       transition: "0.6s",
-      width: 240,
+      width: 150,
+      [theme.breakpoints.up("md")]: {
+        width: 240,
+      },
     },
     active: {
-      width: 400,
+      width: 300,
+      [theme.breakpoints.up("md")]: {
+        width: 400,
+      },
     },
     message: {
       width: "100%",
