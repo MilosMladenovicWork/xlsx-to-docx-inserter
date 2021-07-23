@@ -11,7 +11,7 @@ const AvailableColumns = ({
   isOpen,
 }: AvailableColumnsProps) => {
   return (
-    <Section isOpen={isOpen} hasDivider={false}>
+    <Section isOpen={isOpen} title="Check column data" hasDivider={false}>
       <Grid container item spacing={1}>
         <Grid item>
           <Typography>Available columns</Typography>

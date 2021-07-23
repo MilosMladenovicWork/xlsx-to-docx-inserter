@@ -54,10 +54,6 @@ const useStyles = makeStyles(
     },
     listItem: { color: theme.palette.text.primary },
     listTitle: { color: theme.palette.text.primary },
-    divider: {
-      borderBottom: `1px solid ${theme.palette.secondary.main}`,
-      margin: theme.spacing(5, 0, 0, 0),
-    },
   }),
   { name: "UploadXSLX" }
 );
@@ -87,70 +83,79 @@ const UploadXSLX = ({
 
   return (
     <div className={classes.root}>
-      <Section isOpen={isOpen} hasDivider={false} title={title}>
-        <List className={classes.list}>
-          <AnimateSharedLayout>
-            <AnimatePresence>
-              {uploadedFiles.map((file) => (
-                <motion.div
-                  key={file}
-                  initial={{
-                    maxHeight: 0,
-                    opacity: 0,
-                    overflow: "hidden",
-                  }}
-                  animate={{
-                    maxHeight: 100,
-                    opacity: 1,
-                    overflow: "hidden",
-                  }}
-                  exit={{
-                    maxHeight: 0,
-                    opacity: 0,
-                    overflow: "hidden",
-                  }}
-                  layout
-                >
-                  <ListItem className={classes.listItem}>
-                    <ListItemAvatar>
-                      <Avatar>
-                        <Description />
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={window.electron.getFileNameFromPath(file)}
-                      primaryTypographyProps={{ noWrap: true }}
-                    />
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={() => removeUploadedFile(file)}
+      <Section
+        isOpen={isOpen}
+        hasDivider={uploadedFiles.length > 0}
+        title={title}
+      >
+        <Grid container direction="column" spacing={2}>
+          <Grid item>
+            {uploadedFiles.length > 0 && (
+              <List className={classes.list}>
+                <AnimateSharedLayout>
+                  <AnimatePresence>
+                    {uploadedFiles.map((file) => (
+                      <motion.div
+                        key={file}
+                        initial={{
+                          maxHeight: 0,
+                          opacity: 0,
+                          overflow: "hidden",
+                        }}
+                        animate={{
+                          maxHeight: 100,
+                          opacity: 1,
+                          overflow: "hidden",
+                        }}
+                        exit={{
+                          maxHeight: 0,
+                          opacity: 0,
+                          overflow: "hidden",
+                        }}
+                        layout
                       >
-                        <Delete />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </AnimateSharedLayout>
-        </List>
+                        <ListItem className={classes.listItem}>
+                          <ListItemAvatar>
+                            <Avatar>
+                              <Description />
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={window.electron.getFileNameFromPath(file)}
+                            primaryTypographyProps={{ noWrap: true }}
+                          />
+                          <ListItemSecondaryAction>
+                            <IconButton
+                              edge="end"
+                              aria-label="delete"
+                              onClick={() => removeUploadedFile(file)}
+                            >
+                              <Delete />
+                            </IconButton>
+                          </ListItemSecondaryAction>
+                        </ListItem>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </AnimateSharedLayout>
+              </List>
+            )}
+          </Grid>
+          <Grid item>
+            <ValidationWrapper isValid={checkDataValid()}>
+              <Button
+                variant="contained"
+                onClick={onUploadHandler}
+                color="secondary"
+                component="label"
+                startIcon={<Publish />}
+              >
+                Upload XLSX File
+              </Button>
+            </ValidationWrapper>
+          </Grid>
+        </Grid>
       </Section>
-      <Grid item>
-        <ValidationWrapper isValid={checkDataValid()}>
-          <Button
-            variant="contained"
-            onClick={onUploadHandler}
-            color="secondary"
-            component="label"
-            startIcon={<Publish />}
-          >
-            Upload XLSX File
-          </Button>
-        </ValidationWrapper>
-      </Grid>
-      <div className={classes.divider}></div>
     </div>
   );
 };

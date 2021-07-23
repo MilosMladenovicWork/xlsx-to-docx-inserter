@@ -284,7 +284,7 @@ const Convert = () => {
           uploadedFiles={uploadedFiles}
           removeUploadedFile={removeUploadedFile}
           onUploadHandler={onUploadHandler}
-          isOpen={uploadedFiles.length > 0}
+          isOpen={true}
           xlsxUploadStatuses={XLSXUploadStatuses}
         />
         <AvailableColumns
@@ -310,7 +310,7 @@ const Convert = () => {
         />
         <AvailablePlaceholders
           docxPlaceholders={docxPlaceholders}
-          isOpen={docxPlaceholders && uploadedFiles.length > 0}
+          isOpen={!!selectedTemplate && uploadedFiles.length > 0}
         />
         <SaveWordFiles
           generatingDOCX={generatingDOCX}
@@ -415,6 +415,7 @@ const Convert = () => {
                   <Button
                     variant="contained"
                     color="secondary"
+                    disabled={sendingEmails}
                     startIcon={<Email />}
                     onClick={async () => {
                       setSendingEmails(true);

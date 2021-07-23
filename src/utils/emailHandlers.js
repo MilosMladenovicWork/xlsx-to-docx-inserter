@@ -230,8 +230,6 @@ const sendEmails = async (
           ],
         };
 
-        previewEmailPackage(message);
-
         const configurationJSON = await getConfigurationJSON();
 
         if (configurationJSON !== undefined) {

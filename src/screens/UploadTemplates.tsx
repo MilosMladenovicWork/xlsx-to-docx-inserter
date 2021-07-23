@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
 import { useEmailHTMLTemplates, useEmailTextTemplates } from "./Convert";
 import ValidationWrapper from "./components/ValidationWrapper";
+import Section from "./components/Section";
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -115,15 +116,78 @@ const UploadTemplates = () => {
 
   return (
     <Grid container direction="column">
-      {uploadedFiles.length > 0 && (
-        <>
-          <Typography className={classes.listTitle} variant="h6" gutterBottom>
-            Uploaded data
-          </Typography>
+      <Section isOpen={true} title="Uploaded data">
+        {uploadedFiles.length > 0 && (
+          <>
+            <List className={classes.list}>
+              <AnimateSharedLayout>
+                <AnimatePresence>
+                  {uploadedFiles.map((file) => (
+                    <motion.div
+                      key={file}
+                      initial={{
+                        maxHeight: 0,
+                        opacity: 0,
+                        overflow: "hidden",
+                      }}
+                      animate={{
+                        maxHeight: 100,
+                        opacity: 1,
+                        overflow: "hidden",
+                      }}
+                      exit={{
+                        maxHeight: 0,
+                        opacity: 0,
+                        overflow: "hidden",
+                      }}
+                      layout
+                    >
+                      <ListItem className={classes.listItem}>
+                        <ListItemAvatar>
+                          <Avatar>
+                            <Description />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={file}
+                          primaryTypographyProps={{ noWrap: true }}
+                        />
+                        <ListItemSecondaryAction>
+                          <IconButton
+                            edge="end"
+                            aria-label="delete"
+                            onClick={() => onDeleteHandler(file)}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </AnimateSharedLayout>
+            </List>
+          </>
+        )}
+
+        <ValidationWrapper className={classes.buttonWrapper} isValid="success">
+          <Button
+            variant="contained"
+            onClick={onUploadHandler}
+            color="secondary"
+            component="label"
+            startIcon={<Publish />}
+          >
+            Upload DOCX File
+          </Button>
+        </ValidationWrapper>
+      </Section>
+      <Section isOpen={true} title="Uploaded Text Document">
+        {uploadedEmailText.length > 0 && (
           <List className={classes.list}>
             <AnimateSharedLayout>
               <AnimatePresence>
-                {uploadedFiles.map((file) => (
+                {uploadedEmailText.map((file) => (
                   <motion.div
                     key={file}
                     initial={{
@@ -157,7 +221,7 @@ const UploadTemplates = () => {
                         <IconButton
                           edge="end"
                           aria-label="delete"
-                          onClick={() => onDeleteHandler(file)}
+                          onClick={() => onDeleteEmailTextHandler(file)}
                         >
                           <Delete />
                         </IconButton>
@@ -168,159 +232,88 @@ const UploadTemplates = () => {
               </AnimatePresence>
             </AnimateSharedLayout>
           </List>
-        </>
-      )}
-
-      <ValidationWrapper className={classes.buttonWrapper} isValid="success">
-        <Button
-          variant="contained"
-          onClick={onUploadHandler}
-          color="secondary"
-          component="label"
-          startIcon={<Publish />}
+        )}
+        <ValidationWrapper
+          className={classes.buttonWrapper}
+          isValid={emailTextValid()}
         >
-          Upload DOCX File
-        </Button>
-      </ValidationWrapper>
-      <div className={classes.divider}></div>
-      <Typography className={classes.listTitle} variant="h6" gutterBottom>
-        Uploaded Text Document
-      </Typography>
-      {uploadedEmailText.length > 0 && (
-        <List className={classes.list}>
-          <AnimateSharedLayout>
-            <AnimatePresence>
-              {uploadedEmailText.map((file) => (
-                <motion.div
-                  key={file}
-                  initial={{
-                    maxHeight: 0,
-                    opacity: 0,
-                    overflow: "hidden",
-                  }}
-                  animate={{
-                    maxHeight: 100,
-                    opacity: 1,
-                    overflow: "hidden",
-                  }}
-                  exit={{
-                    maxHeight: 0,
-                    opacity: 0,
-                    overflow: "hidden",
-                  }}
-                  layout
-                >
-                  <ListItem className={classes.listItem}>
-                    <ListItemAvatar>
-                      <Avatar>
-                        <Description />
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={file}
-                      primaryTypographyProps={{ noWrap: true }}
-                    />
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={() => onDeleteEmailTextHandler(file)}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </AnimateSharedLayout>
-        </List>
-      )}
-      <ValidationWrapper
-        className={classes.buttonWrapper}
-        isValid={emailTextValid()}
-      >
-        <Button
-          variant="contained"
-          onClick={onUploadEmailTextHandler}
-          color="secondary"
-          component="label"
-          startIcon={<Publish />}
+          <Button
+            variant="contained"
+            onClick={onUploadEmailTextHandler}
+            color="secondary"
+            component="label"
+            startIcon={<Publish />}
+          >
+            Upload Email Text
+          </Button>
+        </ValidationWrapper>
+      </Section>
+      <Section title="Upload Email HTML" isOpen={true}>
+        {uploadedEmailHTML.length > 0 && (
+          <List className={classes.list}>
+            <AnimateSharedLayout>
+              <AnimatePresence>
+                {uploadedEmailHTML.map((file) => (
+                  <motion.div
+                    key={file}
+                    initial={{
+                      maxHeight: 0,
+                      opacity: 0,
+                      overflow: "hidden",
+                    }}
+                    animate={{
+                      maxHeight: 100,
+                      opacity: 1,
+                      overflow: "hidden",
+                    }}
+                    exit={{
+                      maxHeight: 0,
+                      opacity: 0,
+                      overflow: "hidden",
+                    }}
+                    layout
+                  >
+                    <ListItem className={classes.listItem}>
+                      <ListItemAvatar>
+                        <Avatar>
+                          <Description />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={file}
+                        primaryTypographyProps={{ noWrap: true }}
+                      />
+                      <ListItemSecondaryAction>
+                        <IconButton
+                          edge="end"
+                          aria-label="delete"
+                          onClick={() => onDeleteEmailHTMLHandler(file)}
+                        >
+                          <Delete />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </AnimateSharedLayout>
+          </List>
+        )}
+        <ValidationWrapper
+          className={classes.buttonWrapper}
+          isValid={htmlEmailValid()}
         >
-          Upload Email Text
-        </Button>
-      </ValidationWrapper>
-      <div className={classes.divider}></div>
-
-      <Typography className={classes.listTitle} variant="h6" gutterBottom>
-        Upload Email HTML
-      </Typography>
-
-      {uploadedEmailHTML.length > 0 && (
-        <List className={classes.list}>
-          <AnimateSharedLayout>
-            <AnimatePresence>
-              {uploadedEmailHTML.map((file) => (
-                <motion.div
-                  key={file}
-                  initial={{
-                    maxHeight: 0,
-                    opacity: 0,
-                    overflow: "hidden",
-                  }}
-                  animate={{
-                    maxHeight: 100,
-                    opacity: 1,
-                    overflow: "hidden",
-                  }}
-                  exit={{
-                    maxHeight: 0,
-                    opacity: 0,
-                    overflow: "hidden",
-                  }}
-                  layout
-                >
-                  <ListItem className={classes.listItem}>
-                    <ListItemAvatar>
-                      <Avatar>
-                        <Description />
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={file}
-                      primaryTypographyProps={{ noWrap: true }}
-                    />
-                    <ListItemSecondaryAction>
-                      <IconButton
-                        edge="end"
-                        aria-label="delete"
-                        onClick={() => onDeleteEmailHTMLHandler(file)}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </AnimateSharedLayout>
-        </List>
-      )}
-      <ValidationWrapper
-        className={classes.buttonWrapper}
-        isValid={htmlEmailValid()}
-      >
-        <Button
-          variant="contained"
-          onClick={onUploadEmailHTMLHandler}
-          color="secondary"
-          component="label"
-          startIcon={<Publish />}
-        >
-          Upload Email HTML
-        </Button>
-      </ValidationWrapper>
-      <div className={classes.divider}></div>
+          <Button
+            variant="contained"
+            onClick={onUploadEmailHTMLHandler}
+            color="secondary"
+            component="label"
+            startIcon={<Publish />}
+          >
+            Upload Email HTML
+          </Button>
+        </ValidationWrapper>
+      </Section>
     </Grid>
   );
 };
