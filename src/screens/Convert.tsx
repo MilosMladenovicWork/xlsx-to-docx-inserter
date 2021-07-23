@@ -9,6 +9,8 @@ import {
   Button,
   Typography,
   Input,
+  CircularProgress,
+  makeStyles,
 } from "@material-ui/core";
 import { Alert, Color } from "@material-ui/lab";
 import { useEffect, useState } from "react";
@@ -22,6 +24,7 @@ import SavePDF from "../sections/SavePDF";
 import SaveWordFiles from "../sections/SaveWordFiles";
 import StatusLogger from "./components/StatusLogger";
 import AvailablePlaceholders from "../sections/AvailablePlaceholders";
+import { Email, Visibility } from "@material-ui/icons";
 
 export interface StatusType {
   label: string;
@@ -63,12 +66,32 @@ export const useEmailHTMLTemplates = (): [
   return [uploadedFiles, setUploadedFiles];
 };
 
+const useStyles = makeStyles(
+  (theme) => ({
+    wrapper: {
+      position: "relative",
+      display: "inline",
+    },
+    buttonProgress: {
+      color: theme.palette.secondary.main,
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      marginTop: -12,
+      marginLeft: -12,
+    },
+  }),
+  { name: "Convert" }
+);
+
 // TODO: check if functions can be moved better
 // TODO: check if some states can be moved in components
 // TODO: TODO: avilable placeholders stays on page when you remove file
 // TODO: remove logger when user delete regex
 
 const Convert = () => {
+  const classes = useStyles();
+
   const [uploadedFiles, setUploadedFiles] = useState<[] | string[]>([]);
   const [XLSXUploadStatuses, setXLSXUploadStatuses] = useState<StatusType[]>(
     []
@@ -114,6 +137,10 @@ const Convert = () => {
     useState("");
   const [selectedEmailHTMLTemplate, setSelectedEmailHTMLTemplate] =
     useState("");
+  const [sendingEmails, setSendingEmails] = useState(false);
+  const [receivedEmailStatuses, setReceivedEmailStatuses] = useState<
+    StatusType[]
+  >([]);
 
   const handleEmailFrom: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setEmailFrom(e.target.value);
@@ -159,7 +186,7 @@ const Convert = () => {
 
     const xlsxStatuses: StatusType[] = await window.electron.checkXLSX(files);
 
-    setXLSXUploadStatuses(xlsxStatuses);
+    setXLSXUploadStatuses(xlsxStatuses === undefined ? [] : xlsxStatuses);
     // const files = await window.electron.ipcRenderer.invoke("uploadXLSX");
     setUploadedFiles((prevState) => [...new Set([...prevState, ...files])]);
   };
@@ -258,6 +285,7 @@ const Convert = () => {
           removeUploadedFile={removeUploadedFile}
           onUploadHandler={onUploadHandler}
           isOpen={uploadedFiles.length > 0}
+          xlsxUploadStatuses={XLSXUploadStatuses}
         />
         <AvailableColumns
           isOpen={uploadedFiles.length > 0}
@@ -362,52 +390,91 @@ const Convert = () => {
           emailSubject &&
           selectedEmailTextTemplate &&
           selectedEmailTextTemplate && (
-            <>
-              <Button
-                variant="contained"
-                onClick={async () =>
-                  await window.electron.previewEmail(
-                    emailFrom,
-                    emailTo,
-                    emailSubject,
-                    selectedEmailTextTemplate,
-                    selectedEmailHTMLTemplate,
-                    uploadedFiles[0]
-                  )
-                }
-              >
-                Preview email
-              </Button>
-            </>
-          )}
-        {xlsxColumnNames &&
-          savedPDFFiles &&
-          savedPDFFiles.length > 0 &&
-          emailFrom &&
-          emailTo &&
-          emailSubject &&
-          selectedEmailTextTemplate &&
-          selectedEmailTextTemplate && (
-            <>
-              <Button
-                variant="contained"
-                onClick={async () => {
-                  const receivedEmailStatuses =
-                    await window.electron.sendEmails(
+            <Grid container spacing={2}>
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  startIcon={<Visibility />}
+                  onClick={async () =>
+                    await window.electron.previewEmail(
                       emailFrom,
                       emailTo,
                       emailSubject,
                       selectedEmailTextTemplate,
                       selectedEmailHTMLTemplate,
-                      uploadedFiles[0],
-                      savedPDFFiles
-                    );
-                  console.log(receivedEmailStatuses);
-                }}
-              >
-                Send emails
-              </Button>
-            </>
+                      uploadedFiles[0]
+                    )
+                  }
+                >
+                  Preview email
+                </Button>
+              </Grid>
+              <Grid item>
+                <div className={classes.wrapper}>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    startIcon={<Email />}
+                    onClick={async () => {
+                      setSendingEmails(true);
+                      const receivedEmailStatuses =
+                        await window.electron.sendEmails(
+                          emailFrom,
+                          emailTo,
+                          emailSubject,
+                          selectedEmailTextTemplate,
+                          selectedEmailHTMLTemplate,
+                          uploadedFiles[0],
+                          savedPDFFiles
+                        );
+
+                      setReceivedEmailStatuses([]);
+
+                      if (receivedEmailStatuses) {
+                        receivedEmailStatuses.forEach(
+                          (status: {
+                            accepted: string[];
+                            rejected: string[];
+                          }) => {
+                            if (status.accepted[0] !== undefined) {
+                              setReceivedEmailStatuses((prevState) => [
+                                ...prevState,
+                                {
+                                  label: "Email sent",
+                                  valid: true,
+                                  message: `Email sent to email: ${status.accepted[0]}`,
+                                },
+                              ]);
+                            }
+                            if (status.rejected[0] !== undefined) {
+                              setReceivedEmailStatuses((prevState) => [
+                                ...prevState,
+                                {
+                                  label: "Email not sent",
+                                  valid: false,
+                                  message: `Email is not sent to email: ${status.accepted[0]}`,
+                                },
+                              ]);
+                            }
+                          }
+                        );
+                      }
+
+                      setSendingEmails(false);
+                    }}
+                  >
+                    Send emails
+                  </Button>
+                  {sendingEmails && (
+                    <CircularProgress
+                      size={24}
+                      className={classes.buttonProgress}
+                    />
+                  )}
+                </div>
+              </Grid>
+            </Grid>
           )}
         <Snackbar
           open={snackbarOpen}
@@ -424,6 +491,7 @@ const Convert = () => {
         checkXLSXColumnsStatuses={checkXLSXColumnsStatuses}
         selectedTemplateStatuses={selectedTemplateStatuses}
         setCheckXLSXColumnsStatuses={setCheckXLSXColumnsStatuses}
+        receivedEmailStatuses={receivedEmailStatuses}
       />
     </>
   );

@@ -13,6 +13,7 @@ export interface StatusLoggerProps {
   >;
   checkXLSXColumnsStatuses: StatusType[];
   selectedTemplateStatuses: StatusType[];
+  receivedEmailStatuses: StatusType[];
 }
 
 const useStyles = makeStyles(
@@ -44,6 +45,7 @@ const StatusLogger = ({
   XLSXUploadStatuses,
   checkXLSXColumnsStatuses,
   selectedTemplateStatuses,
+  receivedEmailStatuses,
 }: StatusLoggerProps) => {
   const classes = useStyles();
   return (
@@ -68,6 +70,7 @@ const StatusLogger = ({
                 ...XLSXUploadStatuses,
                 ...checkXLSXColumnsStatuses,
                 ...selectedTemplateStatuses,
+                ...receivedEmailStatuses,
               ].map(({ valid, label, message }) => (
                 <CollapsableListItem
                   valid={valid}

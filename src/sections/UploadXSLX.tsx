@@ -13,6 +13,8 @@ import {
 import { Description, Publish, Delete } from "@material-ui/icons";
 import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
 import Section from "../screens/components/Section";
+import ValidationWrapper from "../screens/components/ValidationWrapper";
+import { StatusType } from "../screens/Convert";
 
 export interface UploadXSLXProps {
   uploadedFiles: string[] | [];
@@ -20,6 +22,7 @@ export interface UploadXSLXProps {
   onUploadHandler: () => Promise<void>;
   isOpen: boolean;
   title: string;
+  xlsxUploadStatuses: StatusType[];
 }
 
 const useStyles = makeStyles(
@@ -29,24 +32,24 @@ const useStyles = makeStyles(
     },
     list: {
       backgroundColor: theme.palette.background.paper,
-      maxHeight: '200px',
-      overflowY: 'auto',
-      '&::-webkit-scrollbar': {
-        width: '6px',
-        height: '6px',
+      maxHeight: "200px",
+      overflowY: "auto",
+      "&::-webkit-scrollbar": {
+        width: "6px",
+        height: "6px",
       },
-      '&::-webkit-scrollbar-track': {
+      "&::-webkit-scrollbar-track": {
         backgroundColor: theme.palette.tertiary.main,
       },
-      '&::-webkit-scrollbar-thumb': {
+      "&::-webkit-scrollbar-thumb": {
         backgroundColor: theme.palette.secondary.main,
-        borderRadius: '3px',
+        borderRadius: "3px",
       },
-      '&::-webkit-scrollbar-thumb:hover': {
+      "&::-webkit-scrollbar-thumb:hover": {
         backgroundColor: theme.palette.quartenary.main,
       },
       // support for Firefox
-      scrollbarWidth: 'thin',
+      scrollbarWidth: "thin",
       scrollbarColor: `${theme.palette.secondary.main} rgba(0,0,0, 0)`,
     },
     listItem: { color: theme.palette.text.primary },
@@ -65,8 +68,23 @@ const UploadXSLX = ({
   onUploadHandler,
   isOpen,
   title,
+  xlsxUploadStatuses,
 }: UploadXSLXProps) => {
   const classes = useStyles();
+
+  const checkDataValid = () => {
+    const statuseValidArray = xlsxUploadStatuses.map((status) => status.valid);
+    const hasFalseStatus = statuseValidArray.some((item) => item === false);
+
+    if (statuseValidArray.length === 0) {
+      return "neutral";
+    }
+
+    if (hasFalseStatus) return "error";
+    else if (!hasFalseStatus) return "success";
+    else return "neutral";
+  };
+
   return (
     <div className={classes.root}>
       <Section isOpen={isOpen} hasDivider={false} title={title}>
@@ -120,15 +138,17 @@ const UploadXSLX = ({
         </List>
       </Section>
       <Grid item>
-        <Button
-          variant="contained"
-          onClick={onUploadHandler}
-          color="secondary"
-          component="label"
-          startIcon={<Publish />}
-        >
-          Upload XLSX File
-        </Button>
+        <ValidationWrapper isValid={checkDataValid()}>
+          <Button
+            variant="contained"
+            onClick={onUploadHandler}
+            color="secondary"
+            component="label"
+            startIcon={<Publish />}
+          >
+            Upload XLSX File
+          </Button>
+        </ValidationWrapper>
       </Grid>
       <div className={classes.divider}></div>
     </div>

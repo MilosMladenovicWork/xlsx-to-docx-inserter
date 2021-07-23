@@ -104,6 +104,10 @@ const CheckData = ({
     const statuseValidArray = checkXLSXColumnsStatuses.map(status => status.valid);
     const hasFalseStatus = statuseValidArray.some(item => item === false);
 
+    if (statuseValidArray.length === 0) {
+      return "neutral";
+    }
+
     if (hasFalseStatus) return 'error';
     else if (!hasFalseStatus) return 'success';
     else return 'neutral';
