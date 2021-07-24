@@ -15,7 +15,6 @@ import {
 import { Alert, Color } from "@material-ui/lab";
 import { useEffect, useState } from "react";
 import { useUploadedTemplates } from "./UploadTemplates";
-import clsx from "clsx";
 
 import UploadXSLX from "../sections/UploadXSLX";
 import CheckData from "../sections/CheckData";
@@ -135,10 +134,6 @@ const Convert = () => {
   const [emailFrom, setEmailFrom] = useState("");
   const [emailTo, setEmailTo] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
-
-  // const [uploadedPDFFilePaths, setUploadedPDFFilesPaths] = useState<string[]>(
-  //   []
-  // );
 
   const [selectedEmailTextTemplate, setSelectedEmailTextTemplate] =
     useState("");
