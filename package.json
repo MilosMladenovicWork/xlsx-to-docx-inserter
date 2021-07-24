@@ -1,14 +1,21 @@
 {
-  "name": "xlsx-to-docx-inserter",
+  "name": "xlsx-to-email",
   "jest": {
     "moduleNameMapper": {
       "electron": "<rootDir>/src/mocks/electron.js",
       "preview-email": "<rootDir>/src/mocks/preview-email.js"
     }
   },
+  "build": {
+    "appId": "com.xlx-to-email.app"
+  },
+  "description": "App for creating and sending emails from rows in XLSX files.",
+  "author": "Andjela Markovic, Aleksandar Jocovic, Milos Mladenovic",
+  "productName": "XLSX to Email",
   "version": "0.1.0",
   "private": true,
-  "main": "electron-start.ts",
+  "main": "./public/electron.js",
+  "homepage": "./",
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
@@ -38,11 +45,15 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "set BROWSER=none && react-scripts start",
+    "start-electron": "set ELECTRON_START_URL=http://localhost:3000 && electron .",
+    "dev": "concurrently -k \"npm start\" \"npm:electron\"",
+    "electron": "wait-on tcp:3000 && set ELECTRON_START_URL=http://localhost:3000 && electron .",
+    "build-react": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron": "electron ."
+    "electron-build": "electron-builder",
+    "build": "yarn build-react && yarn electron-build"
   },
   "eslintConfig": {
     "extends": [
@@ -64,6 +75,10 @@
   },
   "devDependencies": {
     "@types/node": "^16.3.1",
-    "electron": "^13.1.4"
+    "concurrently": "^6.2.0",
+    "cross-env": "^7.0.3",
+    "electron": "^13.1.4",
+    "electron-builder": "^22.11.7",
+    "wait-on": "^6.0.0"
   }
 }

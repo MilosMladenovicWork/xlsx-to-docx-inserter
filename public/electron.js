@@ -1,9 +1,18 @@
 const { app, BrowserWindow, dialog, ipcMain } = require("electron");
 const path = require("path");
+const url = require('url');
 
 let mainWindow;
 
 const createWindow = () => {
+  const startUrl =
+    process.env.ELECTRON_START_URL ||
+    url.format({
+      pathname: path.join(__dirname, "../build/index.html"),
+      protocol: "file:",
+      slashes: true,
+    });
+
   mainWindow = new BrowserWindow({
     height: 768,
     width: 1024,
@@ -13,12 +22,10 @@ const createWindow = () => {
       preload: path.join(__dirname, "preload.js"),
     },
   });
-  mainWindow.loadURL("http://localhost:3000");
+  mainWindow.loadURL(startUrl);
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
-
-  mainWindow.webContents.openDevTools();
 };
 
 ipcMain.handle("folderDialog", async () => {

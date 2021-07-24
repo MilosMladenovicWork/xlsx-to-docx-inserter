@@ -7,30 +7,30 @@ const {
   openFile,
   savePreviewPDF,
   savePreviewDOCX,
-} = require("./src/utils/fileHandlers");
+} = require("./shared/utils/fileHandlers");
 
 const {
   uploadDOCX,
   deleteDOCX,
   getDOCXPlaceholders,
   checkDOCXPlaceholders,
-} = require("./src/utils/docxHandlers");
+} = require("./shared/utils/docxHandlers");
 
 const {
   checkXLSX,
   checkXLSXRowColumnWithRegex,
   checkXLSXColumnsWithRegex,
   getXLSXColumnNames,
-} = require("./src/utils/xlsxHandlers");
+} = require("./shared/utils/xlsxHandlers");
 
 const {
   createConfiguration,
   getConfiguration,
   saveConfiguration,
   getConfigurationJSON,
-} = require("./src/utils/configurationHandlers");
+} = require("./shared/utils/configurationHandlers");
 
-const { getUploadedTemplates } = require("./src/utils/getTemplate");
+const { getUploadedTemplates } = require("./shared/utils/getTemplate");
 
 const {
   previewEmail,
@@ -41,7 +41,7 @@ const {
   getEmailHTMLTemplates,
   getEmailTextTemplates,
   sendEmails,
-} = require("./src/utils/emailHandlers");
+} = require("./shared/utils/emailHandlers");
 
 contextBridge.exposeInMainWorld("electron", {
   writeFiles,
