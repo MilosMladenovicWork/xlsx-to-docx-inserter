@@ -13,7 +13,7 @@ import {
 import { Publish } from "@material-ui/icons";
 import ValidationWrapper from "../screens/components/ValidationWrapper";
 import Section from "../screens/components/Section";
-import { StatusType } from '../screens/Convert';
+import { StatusType } from "../screens/Convert";
 
 export interface CheckDataProps {
   cellRegexes: { id?: string; regex?: string; colNum: number | undefined }[];
@@ -101,17 +101,19 @@ const CheckData = ({
   };
 
   const checkDataValid = () => {
-    const statuseValidArray = checkXLSXColumnsStatuses.map(status => status.valid);
-    const hasFalseStatus = statuseValidArray.some(item => item === false);
+    const statuseValidArray = checkXLSXColumnsStatuses.map(
+      (status) => status.valid
+    );
+    const hasFalseStatus = statuseValidArray.some((item) => item === false);
 
     if (statuseValidArray.length === 0) {
       return "neutral";
     }
 
-    if (hasFalseStatus) return 'error';
-    else if (!hasFalseStatus) return 'success';
-    else return 'neutral';
-  }
+    if (hasFalseStatus) return "error";
+    else if (!hasFalseStatus) return "success";
+    else return "neutral";
+  };
 
   return (
     <Section isOpen={isOpen}>
@@ -137,7 +139,13 @@ const CheckData = ({
                     {xlsxColumnNames &&
                       xlsxColumnNames.length > 0 &&
                       xlsxColumnNames.map(({ name, colNum }) => (
-                        <MenuItem value={colNum} key={colNum}>
+                        <MenuItem
+                          disabled={cellRegexes
+                            .map((regex) => regex.colNum)
+                            .includes(colNum)}
+                          value={colNum}
+                          key={colNum}
+                        >
                           {name}
                         </MenuItem>
                       ))}
@@ -154,14 +162,19 @@ const CheckData = ({
           );
         })}
         <Grid item>
-          {/* TODO: add logic to this button */}
           <ValidationWrapper isValid={checkDataValid()}>
             <Button
               variant="contained"
               color="secondary"
               component="label"
               startIcon={<Publish />}
-              disabled={checkingXLSXColumns}
+              disabled={
+                checkingXLSXColumns ||
+                cellRegexes.some(
+                  (regex) =>
+                    regex.regex === undefined && regex.colNum !== undefined
+                )
+              }
               onClick={handleCheckXLSXColumns}
             >
               Check columns

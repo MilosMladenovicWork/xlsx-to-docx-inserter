@@ -44,23 +44,25 @@ const ChooseTemplate = ({
 }: ChooseTemplateProps) => {
   const classes = useStyles();
 
-  const choseTemplateValid = () => {
+  const chooseTemplateValid = () => {
     if (selectedTemplateStatuses && selectedTemplateStatuses.length > 0) {
-      if (selectedTemplateStatuses[0].valid === "warning") {
+      if (selectedTemplateStatuses.some((status) => status.valid === false)) {
+        return "error";
+      }
+      if (
+        selectedTemplateStatuses.some((status) => status.valid === "warning")
+      ) {
         return "warning";
       }
-      if (selectedTemplateStatuses[0].valid === true) {
+      if (selectedTemplateStatuses.every((status) => status.valid === true)) {
         return "success";
-      }
-      if (selectedTemplateStatuses[0].valid === false) {
-        return "error";
       }
     } else return "neutral";
   };
 
   return (
     <Section isOpen={isOpen} title={title}>
-      <ValidationWrapper isValid={choseTemplateValid()}>
+      <ValidationWrapper isValid={chooseTemplateValid()}>
         <FormControl className={classes.formControl}>
           <InputLabel>Template</InputLabel>
           <Select onChange={handleSelectedTemplate} value={selectedTemplate}>

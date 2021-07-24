@@ -288,7 +288,10 @@ const Convert = () => {
           xlsxUploadStatuses={XLSXUploadStatuses}
         />
         <AvailableColumns
-          isOpen={uploadedFiles.length > 0}
+          isOpen={
+            !XLSXUploadStatuses.some((status) => status.valid === false) &&
+            uploadedFiles.length > 0
+          }
           xlsxColumnNames={xlsxColumnNames}
         />
         <CheckData
@@ -299,7 +302,10 @@ const Convert = () => {
           checkingXLSXColumns={checkingXLSXColumns}
           handleCheckXLSXColumns={handleCheckXLSXColumns}
           checkXLSXColumnsStatuses={checkXLSXColumnsStatuses}
-          isOpen={uploadedFiles.length > 0}
+          isOpen={
+            !XLSXUploadStatuses.some((status) => status.valid === false) &&
+            uploadedFiles.length > 0
+          }
         />
         <ChooseTemplate
           title="Choose template"
@@ -307,11 +313,20 @@ const Convert = () => {
           handleSelectedTemplate={handleSelectedTemplate}
           selectedTemplate={selectedTemplate}
           uploadedTemplates={uploadedTemplates}
-          isOpen={!!uploadedTemplates.length && uploadedFiles.length > 0}
+          isOpen={
+            !!uploadedTemplates.length &&
+            uploadedFiles.length > 0 &&
+            !XLSXUploadStatuses.some((status) => status.valid === false) &&
+            !checkXLSXColumnsStatuses.some((status) => status.valid === false)
+          }
         />
         <AvailablePlaceholders
           docxPlaceholders={docxPlaceholders}
-          isOpen={!!selectedTemplate && uploadedFiles.length > 0}
+          isOpen={
+            !!selectedTemplate &&
+            uploadedFiles.length > 0 &&
+            !selectedTemplateStatuses.some((status) => status.valid === false)
+          }
         />
         <SaveWordFiles
           generatingDOCX={generatingDOCX}
@@ -321,7 +336,11 @@ const Convert = () => {
           setSnackbarOpen={setSnackbarOpen}
           uploadedFiles={uploadedFiles}
           selectedTemplate={selectedTemplate}
-          isOpen={!!selectedTemplate && uploadedFiles.length > 0}
+          isOpen={
+            !!selectedTemplate &&
+            uploadedFiles.length > 0 &&
+            !selectedTemplateStatuses.some((status) => status.valid === false)
+          }
         />
         <SavePDF
           generatingPDF={generatingPDF}
