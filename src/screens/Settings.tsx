@@ -28,12 +28,12 @@ const useStyles = makeStyles(
       color: "rgba(255, 255, 255, 0.7)",
     },
     numberInput: {
-      '& input': {
-        '&::-webkit-outer-spin-button': {
-          '-webkit-appearance': 'none',
+      "& input": {
+        "&::-webkit-outer-spin-button": {
+          "-webkit-appearance": "none",
         },
-        '&::-webkit-inner-spin-button': {
-          '-webkit-appearance': 'none',
+        "&::-webkit-inner-spin-button": {
+          "-webkit-appearance": "none",
         },
       },
     },
@@ -97,12 +97,11 @@ const UploadTemplates = () => {
   return (
     <Grid container direction="column">
       <Section isOpen title="Global Configurations" hasDivider={false}>
-        <Grid container alignItems="flex-end" item sm>
-          <Grid item sm>
+        <Grid container>
+          <Grid item>
             <FormControl className={classes.formControl}>
               <InputLabel>Service</InputLabel>
               <Input
-                fullWidth
                 onChange={(e) => {
                   setService(e.target.value);
                   saveConfiguration(
@@ -119,8 +118,8 @@ const UploadTemplates = () => {
             </FormControl>
           </Grid>
         </Grid>
-        <Grid container alignItems="flex-end" sm>
-          <Grid item sm>
+        <Grid container>
+          <Grid item>
             <FormControl className={classes.formControl}>
               <InputLabel>Host</InputLabel>
               <Input
@@ -141,8 +140,8 @@ const UploadTemplates = () => {
             </FormControl>
           </Grid>
         </Grid>
-        <Grid container alignItems="flex-end" sm>
-          <Grid item sm>
+        <Grid container>
+          <Grid item>
             <FormControl className={classes.formControl}>
               <InputLabel>Port</InputLabel>
               <Input
@@ -165,8 +164,8 @@ const UploadTemplates = () => {
             </FormControl>
           </Grid>
         </Grid>
-        <Grid container alignItems="flex-end" sm>
-          <Grid item sm>
+        <Grid container>
+          <Grid item>
             <FormControl className={classes.switchControl}>
               <Typography variant="caption" className={classes.switchLabel}>
                 Secure
@@ -189,8 +188,8 @@ const UploadTemplates = () => {
             </FormControl>
           </Grid>
         </Grid>
-        <Grid container alignItems="flex-end" sm>
-          <Grid item sm>
+        <Grid container>
+          <Grid item>
             <FormControl className={classes.formControl}>
               <InputLabel>User</InputLabel>
               <Input
@@ -211,8 +210,8 @@ const UploadTemplates = () => {
             </FormControl>
           </Grid>
         </Grid>
-        <Grid container alignItems="flex-end" sm>
-          <Grid item sm>
+        <Grid container>
+          <Grid item>
             <FormControl className={classes.formControl}>
               <InputLabel>Password</InputLabel>
               <Input

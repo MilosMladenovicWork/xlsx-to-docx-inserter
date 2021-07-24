@@ -1,6 +1,6 @@
 import { createMuiTheme } from "@material-ui/core/styles";
 
-declare module '@material-ui/core/styles/createPalette' {
+declare module "@material-ui/core/styles/createPalette" {
   interface Palette {
     tertiary: PaletteColor;
     quartenary: PaletteColor;
@@ -38,7 +38,14 @@ const theme = createMuiTheme({
       light: "#71c3c6",
       dark: "#71c3c6",
       main: "#71c3c6",
-    }
+    },
+  },
+  overrides: {
+    MuiSelect: {
+      select: {
+        minWidth: 170,
+      },
+    },
   },
 });
 

@@ -341,143 +341,165 @@ const Convert = () => {
         {xlsxColumnNames && savedPDFFiles && savedPDFFiles.length > 0 && (
           <>
             <Typography>
-              Use {} with column name between to insert data from that column
+              Use {"{}"} with column name between to insert data from that
+              column
             </Typography>
-            <FormControl>
-              <InputLabel>Email from</InputLabel>
-              <Input name="emailFrom" onChange={handleEmailFrom} />
-            </FormControl>
-            <FormControl>
-              <InputLabel>Email to</InputLabel>
-              <Input name="emailTo" onChange={handleEmailTo} />
-            </FormControl>
-            <FormControl>
-              <InputLabel>Email from</InputLabel>
-              <Input name="emailSubject" onChange={handleEmailSubject} />
-            </FormControl>
-            <FormControl>
-              <InputLabel>Email text template</InputLabel>
-              <Select
-                onChange={handleEmailTextTemplate}
-                value={selectedEmailTextTemplate}
-              >
-                {emailTextTemplates.map((name) => (
-                  <MenuItem value={name} key={name}>
-                    {name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl>
-              <InputLabel>Email html template</InputLabel>
-              <Select
-                onChange={handleEmailHTMLTemplate}
-                value={selectedEmailHTMLTemplate}
-              >
-                {emailHTMLTemplates.map((name) => (
-                  <MenuItem value={name} key={name}>
-                    {name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <Grid container direction="column" spacing={2}>
+              <Grid item>
+                <FormControl>
+                  <InputLabel>Email from</InputLabel>
+                  <Input
+                    placeholder="John Doe <john@doe.com>"
+                    name="emailFrom"
+                    onChange={handleEmailFrom}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item>
+                <FormControl>
+                  <InputLabel>Email to</InputLabel>
+                  <Input
+                    placeholder="{Email}"
+                    name="emailTo"
+                    onChange={handleEmailTo}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item>
+                <FormControl>
+                  <InputLabel>Subject</InputLabel>
+                  <Input
+                    placeholder="Some subject text"
+                    name="emailSubject"
+                    onChange={handleEmailSubject}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item>
+                <FormControl>
+                  <InputLabel>Email text template</InputLabel>
+                  <Select
+                    onChange={handleEmailTextTemplate}
+                    value={selectedEmailTextTemplate}
+                  >
+                    {emailTextTemplates.map((name) => (
+                      <MenuItem value={name} key={name}>
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item>
+                <FormControl>
+                  <InputLabel>Email html template</InputLabel>
+                  <Select
+                    onChange={handleEmailHTMLTemplate}
+                    value={selectedEmailHTMLTemplate}
+                  >
+                    {emailHTMLTemplates.map((name) => (
+                      <MenuItem value={name} key={name}>
+                        {name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              {emailFrom &&
+                emailTo &&
+                emailSubject &&
+                selectedEmailTextTemplate &&
+                selectedEmailTextTemplate && (
+                  <Grid container item spacing={2}>
+                    <Grid item>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        startIcon={<Visibility />}
+                        onClick={async () =>
+                          await window.electron.previewEmail(
+                            emailFrom,
+                            emailTo,
+                            emailSubject,
+                            selectedEmailTextTemplate,
+                            selectedEmailHTMLTemplate,
+                            uploadedFiles[0]
+                          )
+                        }
+                      >
+                        Preview email
+                      </Button>
+                    </Grid>
+                    <Grid item>
+                      <div className={classes.wrapper}>
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          disabled={sendingEmails}
+                          startIcon={<Email />}
+                          onClick={async () => {
+                            setSendingEmails(true);
+                            const receivedEmailStatuses =
+                              await window.electron.sendEmails(
+                                emailFrom,
+                                emailTo,
+                                emailSubject,
+                                selectedEmailTextTemplate,
+                                selectedEmailHTMLTemplate,
+                                uploadedFiles[0],
+                                savedPDFFiles
+                              );
+
+                            setReceivedEmailStatuses([]);
+
+                            if (receivedEmailStatuses) {
+                              receivedEmailStatuses.forEach(
+                                (status: {
+                                  accepted: string[];
+                                  rejected: string[];
+                                }) => {
+                                  if (status.accepted[0] !== undefined) {
+                                    setReceivedEmailStatuses((prevState) => [
+                                      ...prevState,
+                                      {
+                                        label: "Email sent",
+                                        valid: true,
+                                        message: `Email sent to email: ${status.accepted[0]}`,
+                                      },
+                                    ]);
+                                  }
+                                  if (status.rejected[0] !== undefined) {
+                                    setReceivedEmailStatuses((prevState) => [
+                                      ...prevState,
+                                      {
+                                        label: "Email not sent",
+                                        valid: false,
+                                        message: `Email is not sent to email: ${status.accepted[0]}`,
+                                      },
+                                    ]);
+                                  }
+                                }
+                              );
+                            }
+
+                            setSendingEmails(false);
+                          }}
+                        >
+                          Send emails
+                        </Button>
+                        {sendingEmails && (
+                          <CircularProgress
+                            size={24}
+                            className={classes.buttonProgress}
+                          />
+                        )}
+                      </div>
+                    </Grid>
+                  </Grid>
+                )}
+            </Grid>
           </>
         )}
-        {xlsxColumnNames &&
-          savedPDFFiles &&
-          savedPDFFiles.length > 0 &&
-          emailFrom &&
-          emailTo &&
-          emailSubject &&
-          selectedEmailTextTemplate &&
-          selectedEmailTextTemplate && (
-            <Grid container spacing={2}>
-              <Grid item>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  startIcon={<Visibility />}
-                  onClick={async () =>
-                    await window.electron.previewEmail(
-                      emailFrom,
-                      emailTo,
-                      emailSubject,
-                      selectedEmailTextTemplate,
-                      selectedEmailHTMLTemplate,
-                      uploadedFiles[0]
-                    )
-                  }
-                >
-                  Preview email
-                </Button>
-              </Grid>
-              <Grid item>
-                <div className={classes.wrapper}>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    disabled={sendingEmails}
-                    startIcon={<Email />}
-                    onClick={async () => {
-                      setSendingEmails(true);
-                      const receivedEmailStatuses =
-                        await window.electron.sendEmails(
-                          emailFrom,
-                          emailTo,
-                          emailSubject,
-                          selectedEmailTextTemplate,
-                          selectedEmailHTMLTemplate,
-                          uploadedFiles[0],
-                          savedPDFFiles
-                        );
-
-                      setReceivedEmailStatuses([]);
-
-                      if (receivedEmailStatuses) {
-                        receivedEmailStatuses.forEach(
-                          (status: {
-                            accepted: string[];
-                            rejected: string[];
-                          }) => {
-                            if (status.accepted[0] !== undefined) {
-                              setReceivedEmailStatuses((prevState) => [
-                                ...prevState,
-                                {
-                                  label: "Email sent",
-                                  valid: true,
-                                  message: `Email sent to email: ${status.accepted[0]}`,
-                                },
-                              ]);
-                            }
-                            if (status.rejected[0] !== undefined) {
-                              setReceivedEmailStatuses((prevState) => [
-                                ...prevState,
-                                {
-                                  label: "Email not sent",
-                                  valid: false,
-                                  message: `Email is not sent to email: ${status.accepted[0]}`,
-                                },
-                              ]);
-                            }
-                          }
-                        );
-                      }
-
-                      setSendingEmails(false);
-                    }}
-                  >
-                    Send emails
-                  </Button>
-                  {sendingEmails && (
-                    <CircularProgress
-                      size={24}
-                      className={classes.buttonProgress}
-                    />
-                  )}
-                </div>
-              </Grid>
-            </Grid>
-          )}
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={6000}
