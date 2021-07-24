@@ -11,10 +11,11 @@ html
         font-family: arial, sans-serif;
         padding-left: 30px;
         padding-right: 40px;
-        background-color: '#999';
+        background-color: #0F1B2B;
+        color: #fff;
       }
       ul {
-        list-style: none;
+        padding: 0;
       }
       ul li {
         margin-bottom: 10px;
@@ -22,6 +23,7 @@ html
       }
       ul li a {
         color: #A8DADC;
+        text-decoration: none;
       }
       table {
         padding-left: 10px;
@@ -37,6 +39,9 @@ html
         font-weight: normal;
         padding: 6px 16px 6px 0
       }
+      pre {
+        width: fit-content;
+      }
       iframe {
         border: 0;
         height: 100%;
@@ -45,6 +50,8 @@ html
         border: 1px solid #A8DADC;
         height: fit-content;
         border-radius: 5px;
+        background-color: #fff;
+        color: #fff;
       }
       .subject h3 {
         width: fit-content;
@@ -54,22 +61,42 @@ html
         margin-right: 20px;
       }
       .divider {
-        margin-bottom: 30px;
+        height: 30px;
+      }
+      .headerDivider:nth-child(1) {
+        opacity: 0.1;
+        border-top: 1px solid #A8DADC;
+        margin-bottom: 10px;
+      }
+      .headerDivider:nth-child(4) {
+        opacity: 0.1;
+        border-top: 1px solid #A8DADC;
+        margin-bottom: 10px;
+      }
+      .headerDivider:last-of-type {
+        opacity: 0.1;
+        border-top: 1px solid #A8DADC;
+        margin-bottom: 10px;
       }
       .html-text-wrap {
         display: flex;
-        flex-wrap: wrap;
       }
       .html-text {
         margin-right: 30px;
+        min-width: calc(50vw - 61px);
       }
-      .html-text p {
-        width: fit-content;
+      .html-text-wrap .html-text:last-of-type {
+        margin-right: 0;
       }
-      .html-text p iframe {
-        min-width: 30vw;
+      @media screen and (max-width: 900px) {
+        .html-text-wrap {
+          flex-direction: column;
+        }
+        .html-text {
+          margin-right: 0;
+          min-width: calc(100% - 61px);
+        }
       }
-
 
   body
     if headers.get('subject')
@@ -82,10 +109,10 @@ html
       code
         each headerLine, i in headerLines
           = headerLine.line
-          if i < headerLines.length - 1
-            br
+          if i < headerLines.length
+            div.headerDivider
+    div.divider
     if attachments && attachments.length > 0
-      div.divider
       h3 Attachments:
       ul
         each a in attachments
@@ -105,3 +132,5 @@ html
         div.html-text 
           h3 TEXT:
           p: iframe(seamless='seamless', srcdoc=`<pre>${text}</pre>`)
+    div.divider
+    

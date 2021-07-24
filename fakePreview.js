@@ -10,7 +10,7 @@ const message = {
   from: 'niftylettuce+from@gmail.com',
   to: 'niftylettuce+to@gmail.com',
   subject: 'Hello world',
-  html: '<p>Hello worldbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</p>',
+  html: '<p>Hello world</p>',
   text: 'Hello world',
   attachments: [ { filename: 'hello-world.txt', content: 'Hello world' }, { filename: 'hello-world.txt', content: 'Hello world' } ]
 };
