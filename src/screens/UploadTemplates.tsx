@@ -103,6 +103,10 @@ const UploadTemplates = () => {
     );
   };
 
+  const docxValid = () => {
+    if (uploadedFiles.length > 0) return "success";
+    else return "neutral";
+  };
   const emailTextValid = () => {
     if (uploadedEmailText.length > 0) return "success";
     else return "neutral";
@@ -170,7 +174,10 @@ const UploadTemplates = () => {
           </>
         )}
 
-        <ValidationWrapper className={classes.buttonWrapper} isValid="success">
+        <ValidationWrapper
+          className={classes.buttonWrapper}
+          isValid={docxValid()}
+        >
           <Button
             variant="contained"
             onClick={onUploadHandler}
