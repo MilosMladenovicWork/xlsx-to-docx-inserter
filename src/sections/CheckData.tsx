@@ -48,7 +48,7 @@ const useStyles = makeStyles(
       paddingLeft: 10,
     },
   }),
-  { name: "Convert" }
+  { name: "Check Data" }
 );
 
 const CheckData = ({

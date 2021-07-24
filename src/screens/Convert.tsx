@@ -15,6 +15,7 @@ import {
 import { Alert, Color } from "@material-ui/lab";
 import { useEffect, useState } from "react";
 import { useUploadedTemplates } from "./UploadTemplates";
+import clsx from 'clsx';
 
 import UploadXSLX from "../sections/UploadXSLX";
 import CheckData from "../sections/CheckData";
@@ -80,6 +81,9 @@ const useStyles = makeStyles(
       marginTop: -12,
       marginLeft: -12,
     },
+    content: {
+      width: "calc(100% - 272px)",
+    }
   }),
   { name: "Convert" }
 );
