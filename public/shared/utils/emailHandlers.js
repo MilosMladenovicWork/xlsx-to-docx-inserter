@@ -95,12 +95,14 @@ const previewEmail = async (
       html: htmlText, // html body
     };
 
-    previewEmailPackage(message);
+    previewEmailPackage(message, { template: path.join(__dirname, 'template.pug') });
 
     return message;
   } catch (e) {
     console.log(e);
   }
+
+  
 };
 
 const sendEmails = async (

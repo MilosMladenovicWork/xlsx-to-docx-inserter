@@ -1,0 +1,107 @@
+html
+  head
+    meta(charset="utf-8")
+    meta(http-equiv="x-ua-compatible", content="ie=edge")
+    if subject
+      title= subject
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css")
+    style(type='text/css').
+      body {
+        font-family: arial, sans-serif;
+        padding-left: 30px;
+        padding-right: 40px;
+        background-color: '#999';
+      }
+      ul {
+        list-style: none;
+      }
+      ul li {
+        margin-bottom: 10px;
+        list-style: none;
+      }
+      ul li a {
+        color: #A8DADC;
+      }
+      table {
+        padding-left: 10px;
+        padding-right: 10px;
+        font-size: 13px;
+      }
+      td {
+        padding: 6px 0 6px 0;
+      }
+      th {
+        text-align: right;
+        color: #999;
+        font-weight: normal;
+        padding: 6px 16px 6px 0
+      }
+      iframe {
+        border: 0;
+        height: 100%;
+        width: 100%;
+        display: block;
+        border: 1px solid #A8DADC;
+        height: fit-content;
+        border-radius: 5px;
+      }
+      .subject h3 {
+        width: fit-content;
+        display: inline-block;
+      }
+      .subject-content {
+        margin-right: 20px;
+      }
+      .divider {
+        margin-bottom: 30px;
+      }
+      .html-text-wrap {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .html-text {
+        margin-right: 30px;
+      }
+      .html-text p {
+        width: fit-content;
+      }
+      .html-text p iframe {
+        min-width: 30vw;
+      }
+
+
+  body
+    if headers.get('subject')
+      div.subject  
+        h3.subject-content Subject: 
+        span= headers.get('subject')
+    div.divider
+    h3 Headers:
+    pre
+      code
+        each headerLine, i in headerLines
+          = headerLine.line
+          if i < headerLines.length - 1
+            br
+    if attachments && attachments.length > 0
+      div.divider
+      h3 Attachments:
+      ul
+        each a in attachments
+          li
+            a(href=`data:${a.contentType};base64,${a.content.toString('base64')}`, download=a.filename, target='_blank')
+              if a.filename
+                = `${a.filename}`
+              else
+                = 'Unnamed file'
+    div.divider
+    div.html-text-wrap
+      if html
+        div.html-text
+          h3 HTML:
+          p: iframe(seamless='seamless', srcdoc=`<base target='_top'>${html}`)
+      if text
+        div.html-text 
+          h3 TEXT:
+          p: iframe(seamless='seamless', srcdoc=`<pre>${text}</pre>`)
