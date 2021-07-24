@@ -95,7 +95,7 @@ const previewEmail = async (
       html: htmlText, // html body
     };
 
-    previewEmailPackage(message, { template: path.join(__dirname, 'template.pug') });
+    previewEmailPackage(message, { template: path.join(__dirname, '../template.pug') });
 
     return message;
   } catch (e) {

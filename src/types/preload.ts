@@ -29,7 +29,7 @@ const {
   createConfiguration,
   getConfiguration,
   saveConfiguration,
-  getConfigurationJSON
+  getConfigurationJSON,
 } = require("../utils/write");
 
 export interface ElectronPreloadFunctions {

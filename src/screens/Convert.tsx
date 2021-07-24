@@ -15,7 +15,7 @@ import {
 import { Alert, Color } from "@material-ui/lab";
 import { useEffect, useState } from "react";
 import { useUploadedTemplates } from "./UploadTemplates";
-import clsx from 'clsx';
+import clsx from "clsx";
 
 import UploadXSLX from "../sections/UploadXSLX";
 import CheckData from "../sections/CheckData";
@@ -83,7 +83,7 @@ const useStyles = makeStyles(
     },
     content: {
       width: "calc(100% - 272px)",
-    }
+    },
   }),
   { name: "Convert" }
 );
@@ -109,6 +109,10 @@ const Convert = () => {
   const [selectedTemplateStatuses, setSelectedTemplateStatuses] = useState<
     StatusType[]
   >([]);
+  const [writePDFStatuses, setwritePDFStatuses] = useState<StatusType[]>([]);
+  const [previewPDFStatuses, setPreviewPDFStatuses] = useState<StatusType[]>(
+    []
+  );
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [fileWrittingStatus, setFileWrittingStatus] = useState<{
     severity: Color | undefined;
@@ -122,7 +126,7 @@ const Convert = () => {
   const [savedDOCXFiles, setSavedDOCXFiles] = useState([]);
   const [generatingPDF, setGeneratingPDF] = useState(false);
   const [generatingPreviewPDF, setGeneratingPreviewPDF] = useState(false);
-  const [savedPDFFiles, setSavedPDFFiles] = useState([]);
+  const [savedPDFFiles, setSavedPDFFiles] = useState<string[]>([]);
 
   const [uploadedTemplates] = useUploadedTemplates();
   const [emailTextTemplates] = useEmailTextTemplates();
@@ -131,6 +135,10 @@ const Convert = () => {
   const [emailFrom, setEmailFrom] = useState("");
   const [emailTo, setEmailTo] = useState("");
   const [emailSubject, setEmailSubject] = useState("");
+
+  // const [uploadedPDFFilePaths, setUploadedPDFFilesPaths] = useState<string[]>(
+  //   []
+  // );
 
   const [selectedEmailTextTemplate, setSelectedEmailTextTemplate] =
     useState("");
@@ -392,6 +400,10 @@ const Convert = () => {
           }
         />
         <SavePDF
+          writePDFStatuses={writePDFStatuses}
+          previewPDFStatuses={previewPDFStatuses}
+          setPreviewPDFStatuses={setPreviewPDFStatuses}
+          setwritePDFStatuses={setwritePDFStatuses}
           generatingPDF={generatingPDF}
           setGeneratingPDF={setGeneratingPDF}
           generatingPreviewPDF={generatingPreviewPDF}
@@ -599,6 +611,8 @@ const Convert = () => {
         selectedTemplateStatuses={selectedTemplateStatuses}
         setCheckXLSXColumnsStatuses={setCheckXLSXColumnsStatuses}
         receivedEmailStatuses={receivedEmailStatuses}
+        writePDFStatuses={writePDFStatuses}
+        previewPDFStatuses={previewPDFStatuses}
       />
     </>
   );

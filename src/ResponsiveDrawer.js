@@ -79,6 +79,10 @@ const useStyles = makeStyles((theme) => ({
       width: 240,
     },
   },
+  listItem: {
+    marginBottom: theme.spacing(2),
+    maxHeight: '48px',
+  },
   content: {
     marginTop: theme.mixins.toolbar.minHeight + 10,
     padding: theme.spacing(4, 3),
@@ -131,27 +135,35 @@ function ResponsiveDrawer(props) {
       <Divider />
       <List>
         <Link to="/">
-          <ListItem button>
+          <ListItem
+            className={classes.listItem}
+            button
+            selected={pathname === "/"}
+          >
             <ListItemIcon>
               <Mail />
             </ListItemIcon>
             <ListItemText primary={"Create emails"} />
           </ListItem>
         </Link>
-      </List>
-      <List>
         <Link to="/upload-templates">
-          <ListItem button>
+          <ListItem
+            className={classes.listItem}
+            button
+            selected={pathname === "/upload-templates"}
+          >
             <ListItemIcon>
               <Publish />
             </ListItemIcon>
-            <ListItemText primary={"Upload templates"} />
+            <ListItemText className={classes.listItemText} primary={"Upload templates"} />
           </ListItem>
         </Link>
-      </List>
-      <List>
         <Link to="/settings">
-          <ListItem button>
+          <ListItem
+            className={classes.listItem}
+            button
+            selected={pathname === "/settings"}
+          >
             <ListItemIcon>
               <Settings />
             </ListItemIcon>
