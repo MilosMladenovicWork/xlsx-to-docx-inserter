@@ -44,7 +44,6 @@ const useStyles = makeStyles(
   { name: "Convert" }
 );
 
-// TODO: change loading button
 const UploadTemplates = () => {
   const classes = useStyles();
 

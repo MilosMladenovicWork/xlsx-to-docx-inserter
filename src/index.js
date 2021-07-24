@@ -6,8 +6,6 @@ import reportWebVitals from "./reportWebVitals";
 import { ThemeProvider } from "@material-ui/styles";
 import theme from './theme/AppTheme'
 
-// TODO: fix browser crashing on development when start script runs
-
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>

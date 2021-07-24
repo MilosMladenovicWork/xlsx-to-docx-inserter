@@ -84,11 +84,6 @@ const useStyles = makeStyles(
   { name: "Convert" }
 );
 
-// TODO: check if functions can be moved better
-// TODO: check if some states can be moved in components
-// TODO: TODO: avilable placeholders stays on page when you remove file
-// TODO: remove logger when user delete regex
-
 const Convert = () => {
   const classes = useStyles();
 
@@ -125,9 +120,9 @@ const Convert = () => {
   const [generatingPreviewPDF, setGeneratingPreviewPDF] = useState(false);
   const [savedPDFFiles, setSavedPDFFiles] = useState([]);
 
-  const [uploadedTemplates, setUploadedTemplates] = useUploadedTemplates();
-  const [emailTextTemplates, setEmailTextTemplates] = useEmailTextTemplates();
-  const [emailHTMLTemplates, setEmailHTMLTemplates] = useEmailHTMLTemplates();
+  const [uploadedTemplates] = useUploadedTemplates();
+  const [emailTextTemplates] = useEmailTextTemplates();
+  const [emailHTMLTemplates] = useEmailHTMLTemplates();
 
   const [emailFrom, setEmailFrom] = useState("");
   const [emailTo, setEmailTo] = useState("");
@@ -328,12 +323,7 @@ const Convert = () => {
 
   return (
     <>
-      {/* TODO: update this */}
-      <Grid
-        container
-        direction="column"
-        style={{ width: "calc(100% - 272px)" }}
-      >
+      <Grid container direction="column">
         <UploadXSLX
           title="Upload data"
           uploadedFiles={uploadedFiles}

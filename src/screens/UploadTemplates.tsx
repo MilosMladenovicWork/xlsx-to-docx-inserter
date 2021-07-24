@@ -7,7 +7,6 @@ import {
   ListItemText,
   Avatar,
   makeStyles,
-  Typography,
   IconButton,
   ListItemSecondaryAction,
 } from "@material-ui/core";
@@ -115,8 +114,6 @@ const UploadTemplates = () => {
     if (uploadedEmailHTML.length > 0) return "success";
     else return "neutral";
   };
-
-  // TODO: add animations on buttons and add titles on each section
 
   return (
     <Grid container direction="column">

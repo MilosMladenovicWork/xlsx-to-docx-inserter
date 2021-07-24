@@ -14,12 +14,13 @@ import {
   Typography,
   Grid,
 } from "@material-ui/core";
-import { Autorenew, Mail, Publish, Settings } from "@material-ui/icons";
+import { Mail, Publish, Settings } from "@material-ui/icons";
 import MenuIcon from "@material-ui/icons/Menu";
 import React from "react";
 import PropTypes from "prop-types";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import clsx from "clsx";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,11 +82,10 @@ const useStyles = makeStyles((theme) => ({
   content: {
     marginTop: theme.mixins.toolbar.minHeight + 10,
     padding: theme.spacing(4, 3),
-    height: `calc(100vh - ${theme.mixins.toolbar.minHeight + 10}px)`,
+    height: `calc(100vh - ${Number(theme.mixins.toolbar.minHeight) + 10}px)`,
     overflowY: "auto",
+    width: "100%",
     [theme.breakpoints.up("sm")]: {
-      // width: "calc(100% - 513px)", // substract scrollbar
-      width: "100%",
       padding: theme.spacing(4, 5),
     },
     "&::-webkit-scrollbar": {
@@ -103,6 +103,14 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.quartenary.main,
     },
   },
+  contentWithStatusLogger: {
+    [theme.breakpoints.up("sm")]: {
+      width: "calc(100% - 244px)",
+    },
+    [theme.breakpoints.up("md")]: {
+      width: "calc(100% - 512px)",
+    },
+  },
 }));
 
 function ResponsiveDrawer(props) {
@@ -114,6 +122,8 @@ function ResponsiveDrawer(props) {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  const { pathname } = useLocation();
 
   const drawer = (
     <div>
@@ -207,8 +217,12 @@ function ResponsiveDrawer(props) {
           </Drawer>
         </Hidden>
       </nav>
-      {/* TODO: find solution for when right side bar is not available */}
-      <Grid container className={classes.content}>
+      <Grid
+        container
+        className={clsx(classes.content, {
+          [classes.contentWithStatusLogger]: pathname === "/",
+        })}
+      >
         {children}
       </Grid>
     </div>
