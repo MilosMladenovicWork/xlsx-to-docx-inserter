@@ -240,7 +240,6 @@ const sendEmails = async (
             secure,
             auth: { user, pass },
           } = JSON.parse(configurationJSON);
-          console.log(JSON.parse(configurationJSON));
           let transporter = nodemailer.createTransport({
             service,
             host,

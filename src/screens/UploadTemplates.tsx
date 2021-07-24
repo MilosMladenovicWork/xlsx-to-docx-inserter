@@ -120,7 +120,7 @@ const UploadTemplates = () => {
 
   return (
     <Grid container direction="column">
-      <Section isOpen={true} title="Uploaded data">
+      <Section isOpen={true} title="Uploaded DOCX Templates">
         {uploadedFiles.length > 0 && (
           <>
             <List className={classes.list}>
@@ -189,7 +189,7 @@ const UploadTemplates = () => {
           </Button>
         </ValidationWrapper>
       </Section>
-      <Section isOpen={true} title="Uploaded Text Document">
+      <Section isOpen={true} title="Uploaded Email Text Templates">
         {uploadedEmailText.length > 0 && (
           <List className={classes.list}>
             <AnimateSharedLayout>
@@ -255,7 +255,7 @@ const UploadTemplates = () => {
           </Button>
         </ValidationWrapper>
       </Section>
-      <Section title="Upload Email HTML" isOpen={true}>
+      <Section title="Uploaded Email HTML Templates" isOpen={true}>
         {uploadedEmailHTML.length > 0 && (
           <List className={classes.list}>
             <AnimateSharedLayout>

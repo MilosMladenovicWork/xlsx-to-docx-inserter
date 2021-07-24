@@ -14,7 +14,7 @@ import {
   Typography,
   Grid,
 } from "@material-ui/core";
-import { Autorenew, Publish, Settings } from "@material-ui/icons";
+import { Autorenew, Mail, Publish, Settings } from "@material-ui/icons";
 import MenuIcon from "@material-ui/icons/Menu";
 import React from "react";
 import PropTypes from "prop-types";
@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   drawerPaper: {
-    overflow: 'hidden',
+    overflow: "hidden",
     [theme.breakpoints.up("sm")]: {
       width: 60,
     },
@@ -123,9 +123,9 @@ function ResponsiveDrawer(props) {
         <Link to="/">
           <ListItem button>
             <ListItemIcon>
-              <Autorenew />
+              <Mail />
             </ListItemIcon>
-            <ListItemText primary={"Convert"} />
+            <ListItemText primary={"Create emails"} />
           </ListItem>
         </Link>
       </List>
@@ -170,7 +170,7 @@ function ResponsiveDrawer(props) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            XLSX to DOCX
+            XLSX to Email
           </Typography>
         </Toolbar>
       </AppBar>

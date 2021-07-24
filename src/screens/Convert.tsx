@@ -142,6 +142,19 @@ const Convert = () => {
     StatusType[]
   >([]);
 
+  const [uploadedDOCXTemplatesStatuses, setUploadedDOCXTemplatesStatuses] =
+    useState<StatusType[]>([]);
+
+  const [
+    uploadedEmailTextTemplatesStatuses,
+    setUploadedEmailTextTemplatesStatuses,
+  ] = useState<StatusType[]>([]);
+
+  const [
+    uploadedEmailHTMLTemplatesStatuses,
+    setUploadedEmailHTMLTemplatesStatuses,
+  ] = useState<StatusType[]>([]);
+
   const handleEmailFrom: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setEmailFrom(e.target.value);
   };
@@ -187,7 +200,49 @@ const Convert = () => {
     const xlsxStatuses: StatusType[] = await window.electron.checkXLSX(files);
 
     setXLSXUploadStatuses(xlsxStatuses === undefined ? [] : xlsxStatuses);
-    // const files = await window.electron.ipcRenderer.invoke("uploadXLSX");
+
+    // check if templates are there
+    const uploadedDOCXTemplates: StatusType[] =
+      await window.electron.getUploadedTemplates();
+    const uploadedEmailTextTemplates: StatusType[] =
+      await window.electron.getEmailTextTemplates();
+    const uploadedEmailHTMLTemplates: StatusType[] =
+      await window.electron.getEmailTextTemplates();
+
+    if (uploadedDOCXTemplates.length === 0) {
+      setUploadedDOCXTemplatesStatuses([
+        {
+          label: "Template missing",
+          valid: false,
+          message: `Please upload DOCX Templates in Upload templates section before proceeding.`,
+        },
+      ]);
+    } else {
+      setUploadedDOCXTemplatesStatuses([]);
+    }
+    if (uploadedEmailTextTemplates.length === 0) {
+      setUploadedEmailTextTemplatesStatuses([
+        {
+          label: "Template missing",
+          valid: false,
+          message: `Please upload Email Text Templates in Upload templates section before proceeding.`,
+        },
+      ]);
+    } else {
+      setUploadedEmailTextTemplatesStatuses([]);
+    }
+    if (uploadedEmailHTMLTemplates.length === 0) {
+      setUploadedEmailHTMLTemplatesStatuses([
+        {
+          label: "Template missing",
+          valid: false,
+          message: `Please upload Email HTML Templates in Upload templates section before proceeding.`,
+        },
+      ]);
+    } else {
+      setUploadedEmailHTMLTemplatesStatuses([]);
+    }
+
     setUploadedFiles((prevState) => [...new Set([...prevState, ...files])]);
   };
 
@@ -458,50 +513,62 @@ const Convert = () => {
                           startIcon={<Email />}
                           onClick={async () => {
                             setSendingEmails(true);
-                            const receivedEmailStatuses =
-                              await window.electron.sendEmails(
-                                emailFrom,
-                                emailTo,
-                                emailSubject,
-                                selectedEmailTextTemplate,
-                                selectedEmailHTMLTemplate,
-                                uploadedFiles[0],
-                                savedPDFFiles
-                              );
+                            try {
+                              const receivedEmailStatuses =
+                                await window.electron.sendEmails(
+                                  emailFrom,
+                                  emailTo,
+                                  emailSubject,
+                                  selectedEmailTextTemplate,
+                                  selectedEmailHTMLTemplate,
+                                  uploadedFiles[0],
+                                  savedPDFFiles
+                                );
 
-                            setReceivedEmailStatuses([]);
+                              setReceivedEmailStatuses([]);
 
-                            if (receivedEmailStatuses) {
-                              receivedEmailStatuses.forEach(
-                                (status: {
-                                  accepted: string[];
-                                  rejected: string[];
-                                }) => {
-                                  if (status.accepted[0] !== undefined) {
-                                    setReceivedEmailStatuses((prevState) => [
-                                      ...prevState,
-                                      {
-                                        label: "Email sent",
-                                        valid: true,
-                                        message: `Email sent to email: ${status.accepted[0]}`,
-                                      },
-                                    ]);
+                              if (receivedEmailStatuses) {
+                                receivedEmailStatuses.forEach(
+                                  (status: {
+                                    accepted: string[];
+                                    rejected: string[];
+                                  }) => {
+                                    if (status.accepted[0] !== undefined) {
+                                      setReceivedEmailStatuses((prevState) => [
+                                        ...prevState,
+                                        {
+                                          label: "Email sent",
+                                          valid: true,
+                                          message: `Email sent to email: ${status.accepted[0]}`,
+                                        },
+                                      ]);
+                                    }
+                                    if (status.rejected[0] !== undefined) {
+                                      setReceivedEmailStatuses((prevState) => [
+                                        ...prevState,
+                                        {
+                                          label: "Email not sent",
+                                          valid: false,
+                                          message: `Email is not sent to email: ${status.accepted[0]}`,
+                                        },
+                                      ]);
+                                    }
                                   }
-                                  if (status.rejected[0] !== undefined) {
-                                    setReceivedEmailStatuses((prevState) => [
-                                      ...prevState,
-                                      {
-                                        label: "Email not sent",
-                                        valid: false,
-                                        message: `Email is not sent to email: ${status.accepted[0]}`,
-                                      },
-                                    ]);
-                                  }
-                                }
-                              );
+                                );
+                              }
+
+                              setSendingEmails(false);
+                            } catch (e) {
+                              console.log(e);
+                              setSendingEmails(false);
+                              setReceivedEmailStatuses([
+                                {
+                                  label: "Emails not sent",
+                                  valid: false,
+                                  message: `Possible reason: invalid email settings, check your email settings in Settings section. Error details: ${e}`,
+                                },
+                              ]);
                             }
-
-                            setSendingEmails(false);
                           }}
                         >
                           Send emails
@@ -531,6 +598,9 @@ const Convert = () => {
       </Grid>
       <StatusLogger
         XLSXUploadStatuses={XLSXUploadStatuses}
+        uploadedDOCXTemplatesStatuses={uploadedDOCXTemplatesStatuses}
+        uploadedEmailTextTemplatesStatuses={uploadedEmailTextTemplatesStatuses}
+        uploadedEmailHTMLTemplatesStatuses={uploadedEmailHTMLTemplatesStatuses}
         checkXLSXColumnsStatuses={checkXLSXColumnsStatuses}
         selectedTemplateStatuses={selectedTemplateStatuses}
         setCheckXLSXColumnsStatuses={setCheckXLSXColumnsStatuses}

@@ -14,6 +14,9 @@ export interface StatusLoggerProps {
   checkXLSXColumnsStatuses: StatusType[];
   selectedTemplateStatuses: StatusType[];
   receivedEmailStatuses: StatusType[];
+  uploadedDOCXTemplatesStatuses: StatusType[];
+  uploadedEmailTextTemplatesStatuses: StatusType[];
+  uploadedEmailHTMLTemplatesStatuses: StatusType[];
 }
 
 const useStyles = makeStyles(
@@ -46,6 +49,9 @@ const StatusLogger = ({
   checkXLSXColumnsStatuses,
   selectedTemplateStatuses,
   receivedEmailStatuses,
+  uploadedDOCXTemplatesStatuses,
+  uploadedEmailTextTemplatesStatuses,
+  uploadedEmailHTMLTemplatesStatuses,
 }: StatusLoggerProps) => {
   const classes = useStyles();
   return (
@@ -68,6 +74,9 @@ const StatusLogger = ({
               selectedTemplateStatuses &&
               [
                 ...XLSXUploadStatuses,
+                ...uploadedDOCXTemplatesStatuses,
+                ...uploadedEmailTextTemplatesStatuses,
+                ...uploadedEmailHTMLTemplatesStatuses,
                 ...checkXLSXColumnsStatuses,
                 ...selectedTemplateStatuses,
                 ...receivedEmailStatuses,
