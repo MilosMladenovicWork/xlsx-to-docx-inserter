@@ -17,6 +17,8 @@ export interface StatusLoggerProps {
   uploadedDOCXTemplatesStatuses: StatusType[];
   uploadedEmailTextTemplatesStatuses: StatusType[];
   uploadedEmailHTMLTemplatesStatuses: StatusType[];
+  writePDFStatuses: StatusType[];
+  previewPDFStatuses: StatusType[];
 }
 
 const useStyles = makeStyles(
@@ -52,6 +54,8 @@ const StatusLogger = ({
   uploadedDOCXTemplatesStatuses,
   uploadedEmailTextTemplatesStatuses,
   uploadedEmailHTMLTemplatesStatuses,
+  writePDFStatuses,
+  previewPDFStatuses,
 }: StatusLoggerProps) => {
   const classes = useStyles();
   return (
@@ -72,6 +76,8 @@ const StatusLogger = ({
             {XLSXUploadStatuses &&
               checkXLSXColumnsStatuses &&
               selectedTemplateStatuses &&
+              writePDFStatuses &&
+              previewPDFStatuses &&
               [
                 ...XLSXUploadStatuses,
                 ...uploadedDOCXTemplatesStatuses,
@@ -79,7 +85,9 @@ const StatusLogger = ({
                 ...uploadedEmailHTMLTemplatesStatuses,
                 ...checkXLSXColumnsStatuses,
                 ...selectedTemplateStatuses,
+                ...writePDFStatuses,
                 ...receivedEmailStatuses,
+                ...previewPDFStatuses,
               ].map(({ valid, label, message }) => (
                 <CollapsableListItem
                   valid={valid}

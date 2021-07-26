@@ -2,7 +2,6 @@ const PizZip = require("pizzip");
 const Docxtemplater = require("docxtemplater");
 const Excel = require("exceljs");
 var toPdf = require("office-to-pdf");
-const RegexParser = require("regex-parser");
 
 const fs = require("fs");
 const path = require("path");

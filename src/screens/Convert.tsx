@@ -80,6 +80,9 @@ const useStyles = makeStyles(
       marginTop: -12,
       marginLeft: -12,
     },
+    content: {
+      width: "calc(100% - 272px)",
+    },
   }),
   { name: "Convert" }
 );
@@ -105,6 +108,10 @@ const Convert = () => {
   const [selectedTemplateStatuses, setSelectedTemplateStatuses] = useState<
     StatusType[]
   >([]);
+  const [writePDFStatuses, setwritePDFStatuses] = useState<StatusType[]>([]);
+  const [previewPDFStatuses, setPreviewPDFStatuses] = useState<StatusType[]>(
+    []
+  );
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [fileWrittingStatus, setFileWrittingStatus] = useState<{
     severity: Color | undefined;
@@ -118,7 +125,7 @@ const Convert = () => {
   const [savedDOCXFiles, setSavedDOCXFiles] = useState([]);
   const [generatingPDF, setGeneratingPDF] = useState(false);
   const [generatingPreviewPDF, setGeneratingPreviewPDF] = useState(false);
-  const [savedPDFFiles, setSavedPDFFiles] = useState([]);
+  const [savedPDFFiles, setSavedPDFFiles] = useState<string[]>([]);
 
   const [uploadedTemplates] = useUploadedTemplates();
   const [emailTextTemplates] = useEmailTextTemplates();
@@ -388,6 +395,10 @@ const Convert = () => {
           }
         />
         <SavePDF
+          writePDFStatuses={writePDFStatuses}
+          previewPDFStatuses={previewPDFStatuses}
+          setPreviewPDFStatuses={setPreviewPDFStatuses}
+          setwritePDFStatuses={setwritePDFStatuses}
           generatingPDF={generatingPDF}
           setGeneratingPDF={setGeneratingPDF}
           generatingPreviewPDF={generatingPreviewPDF}
@@ -595,6 +606,8 @@ const Convert = () => {
         selectedTemplateStatuses={selectedTemplateStatuses}
         setCheckXLSXColumnsStatuses={setCheckXLSXColumnsStatuses}
         receivedEmailStatuses={receivedEmailStatuses}
+        writePDFStatuses={writePDFStatuses}
+        previewPDFStatuses={previewPDFStatuses}
       />
     </>
   );
