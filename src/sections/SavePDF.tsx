@@ -20,7 +20,6 @@ export interface SavePDFProps {
   setSnackbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setwritePDFStatuses: React.Dispatch<React.SetStateAction<StatusType[]>>;
   setPreviewPDFStatuses: React.Dispatch<React.SetStateAction<StatusType[]>>;
-  // setUploadedPDFFiles: React.Dispatch<React.SetStateAction<string[]>>;
   writePDFStatuses: StatusType[];
   previewPDFStatuses: StatusType[];
   savedDOCXFiles: never[];
@@ -121,7 +120,7 @@ const SavePDF = ({
     if (hasFalseStatus) return "error";
     else return "neutral";
   };
-  console.log(previewPDFValid());
+
   return (
     <Section isOpen={isOpen}>
       <Grid container spacing={2}>
