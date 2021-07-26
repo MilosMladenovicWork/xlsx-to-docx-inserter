@@ -95,14 +95,14 @@ const previewEmail = async (
       html: htmlText, // html body
     };
 
-    previewEmailPackage(message, { template: path.join(__dirname, '../template.pug') });
+    previewEmailPackage(message, {
+      template: path.join(__dirname, "../template.pug"),
+    });
 
     return message;
   } catch (e) {
     console.log(e);
   }
-
-  
 };
 
 const sendEmails = async (
@@ -150,6 +150,33 @@ const sendEmails = async (
   );
 
   const emailStatuses = [];
+  const configurationJSON = await getConfigurationJSON();
+
+  const {
+    service,
+    host,
+    port,
+    secure,
+    auth: { user, pass },
+  } = JSON.parse(configurationJSON);
+
+  let transporter = nodemailer.createTransport({
+    service,
+    host,
+    port: port === 0 ? undefined : port,
+    pool: true,
+    maxMessages: Infinity,
+    maxConnections: 100,
+    secure, // true for 465, false for other ports
+    auth: {
+      user, // generated ethereal user
+      pass, // generated ethereal password
+    },
+    tls: {
+      // do not fail on invalid certs
+      rejectUnauthorized: false,
+    },
+  });
 
   worksheet.eachRow(function (row, rowNumber) {
     const rowValues = row.values;
@@ -232,34 +259,12 @@ const sendEmails = async (
           ],
         };
 
-        const configurationJSON = await getConfigurationJSON();
+        // wait between sending emails
+        await new Promise((resolve, reject) =>
+          setTimeout(() => resolve(), rowNumber * 90)
+        );
 
-        if (configurationJSON !== undefined) {
-          const {
-            service,
-            host,
-            port,
-            secure,
-            auth: { user, pass },
-          } = JSON.parse(configurationJSON);
-          let transporter = nodemailer.createTransport({
-            service,
-            host,
-            port: port === 0 ? undefined : port,
-            secure, // true for 465, false for other ports
-            auth: {
-              user, // generated ethereal user
-              pass, // generated ethereal password
-            },
-            tls: {
-              // do not fail on invalid certs
-              rejectUnauthorized: false,
-            },
-          });
-
-          // send mail with defined transport object
-          return transporter.sendMail(message);
-        }
+        return transporter.sendMail(message);
       };
 
       emailStatuses.push(sendMail());
