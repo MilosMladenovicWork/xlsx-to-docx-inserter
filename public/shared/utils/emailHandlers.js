@@ -249,6 +249,10 @@ const sendEmails = async (
               user, // generated ethereal user
               pass, // generated ethereal password
             },
+            tls: {
+              // do not fail on invalid certs
+              rejectUnauthorized: false,
+            },
           });
 
           // send mail with defined transport object
