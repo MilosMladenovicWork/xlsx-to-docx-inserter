@@ -261,7 +261,7 @@ const sendEmails = async (
 
         // wait between sending emails
         await new Promise((resolve, reject) =>
-          setTimeout(() => resolve(), rowNumber * 90)
+          setTimeout(() => resolve(), rowNumber * 1000)
         );
 
         return transporter.sendMail(message);
